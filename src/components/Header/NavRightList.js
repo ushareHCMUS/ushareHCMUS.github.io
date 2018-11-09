@@ -45,8 +45,6 @@ class NavRightList extends React.Component {
   }
 
   changePasswordHandler = (data) => {
-    console.log(data);
-
     this.props.changePassword(data, () => {
       //success
       this.setState({ 
@@ -56,7 +54,6 @@ class NavRightList extends React.Component {
       });
     }, () => {
       //fail
-      console.log('fail')
       this.setState({ 
         alertDialogOpen: true,
         alertDialogTitle: 'Change Password Fail',

@@ -1,5 +1,5 @@
 import { post } from './FetchAPI';
-import { DATA_API, USER_LIST_API, MANAGER_LIST_API, ADMIN_LIST_API, AREA_ZONE_API, PH_ZONE_API } from '../constants/Api';
+import { DATA_API, USER_LIST_API, MANAGER_LIST_API, ADMIN_LIST_API, AREA_ZONE_API, PH_ZONE_API, REGISTER_API, ACTIVE_USER_API, DEACTIVE_USER_API } from '../constants/Api';
 
 //Area
 export function getAreaZoneData() {
@@ -26,4 +26,16 @@ export function getManager() {
 
 export function getAdmin() {
   return post(ADMIN_LIST_API,{});
+}
+
+export function registerUser(data) {
+  return post(REGISTER_API,data);
+}
+
+export function activeUser(id) {
+  return post(ACTIVE_USER_API + id,{});
+}
+
+export function deactiveUser(id) {
+  return post(DEACTIVE_USER_API + id,{});
 }

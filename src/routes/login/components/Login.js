@@ -9,6 +9,7 @@ import { login } from '../actions/';
 import PopupDialog from '../../../components/Dialogs/PopupDialog';
 import PasswordTextField from '../../../components/Dialogs/PasswordTextField';
 import { isEmail } from '../../../utils/helper';
+import Auth from '../../../utils/Auth';
 
 class Login extends React.Component {
   constructor() {
@@ -20,6 +21,10 @@ class Login extends React.Component {
       passwordError:'',
       isError: false
     };
+  }
+
+  componentDidMount() {
+    Auth.removeAuth();
   }
 
   componentWillReceiveProps(nextProps) {

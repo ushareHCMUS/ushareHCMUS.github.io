@@ -48,10 +48,10 @@ function* changePasswordFlow() {
   const INFINITE  = true;
 
   while(INFINITE) {
-    const { payload, success, fail } = yield take(CHANGE_PASSWORD);
+    const { data, success, fail } = yield take(CHANGE_PASSWORD);
     try {
       yield put({ type: START_REQUEST });
-      const response = yield call(changePassword, payload);
+      const response = yield call(changePassword, data);
       yield put({ type: STOP_REQUEST });
 
       if (response && !response.error) {

@@ -9,7 +9,6 @@ import MainApp from 'routes/app/'
 import Page404 from 'routes/404/'
 import Page500 from 'routes/500/'
 import PageLogin from 'routes/login/'
-import PageSignUp from 'routes/sign-up/'
 
 // = styles =
 // 3rd
@@ -67,7 +66,6 @@ class App extends Component {
             <Route exact path="/404" component={Page404} />
             <Route exact path="/500" component={Page500} />
             <Route exact path="/login" component={PageLogin} />
-            <Route exact path="/register" component={PageSignUp} />
           </div>
         </div>
       </MuiThemeProvider>

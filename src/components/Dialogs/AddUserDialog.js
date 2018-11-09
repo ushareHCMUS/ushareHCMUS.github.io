@@ -4,9 +4,7 @@ import {
   TextField,
   FlatButton
 } from 'material-ui';
-import { register } from '../../services/AuthAPI';
 import PasswordTextField from './PasswordTextField';
-import Auth from '../../utils/Auth';
 import { red600 } from 'material-ui/styles/colors';
 
 class AddUserDialog extends Component {
@@ -27,6 +25,10 @@ class AddUserDialog extends Component {
 
   componentWillReceiveProps() {
     this.setState({
+      name:'',
+      email:'',
+      newPass:'',
+      reenterPass:'',
       nameError: '',
       emailError: '',
       newPassError: '',
@@ -44,16 +46,17 @@ class AddUserDialog extends Component {
     if (this.state.name !== '' && this.state.email !== '' && this.state.newPass !== '' && this.state.reenterPass !== '') {
       const data = {
         'name': this.state.name,
-        'email': Auth.email(),
+        'email': this.state.email,
         'password': this.state.newPass,
-        'new-password': this.state.newPass,
+        'c_password': this.state.newPass,
+        'role': this.props.role.toLowerCase()
       }
       if (this.state.newPass !== this.state.reenterPass) {
         this.setState({ reenterPassError: 'Password not match' });
       }
       else {
         this.props.handleClose();
-        this.props.addUser(data);
+        this.props.register(data);
       }
     }
     if (this.state.name === '')
@@ -68,7 +71,7 @@ class AddUserDialog extends Component {
 
   textChangeHandler = (e) => {
     switch (e.currentTarget.name) {
-      case 'New Password':
+      case 'Password':
         this.setState({ newPass: e.currentTarget.value })
         break;
       case 'Reenter Password':
@@ -139,7 +142,7 @@ class AddUserDialog extends Component {
           onKeyDown={this.keyDownHandler}
           onChange={this.emailChangeHandler} /> 
         <PasswordTextField 
-          label={'New Password'} 
+          label={'Password'} 
           errorText={this.state.newPassError}
           onKeyDown={this.keyDownHandler}
           textChangeHandler={this.textChangeHandler} /> 

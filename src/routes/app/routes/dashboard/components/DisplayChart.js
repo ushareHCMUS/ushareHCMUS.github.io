@@ -289,6 +289,8 @@ class DisplayChart extends Component {
             className={'d-flex flex-row align-items-center'}>
             <h6 style={{margin:'24px 8px 24px 0px'}}>Time Interval</h6>
             <RaisedButton 
+              disableTouchRipple
+              disableFocusRipple
               label={'5 minute'}
               style={{minWidth:'141px'}}
               labelPosition={'after'}

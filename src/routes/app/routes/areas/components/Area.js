@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import {
   Paper,
@@ -9,6 +9,7 @@ import WifiIcon from 'material-ui/svg-icons/hardware/router';
 import PhIcon from 'material-ui/svg-icons/editor/insert-chart';
 import QueueAnim from 'rc-queue-anim';
 import { getAreaData } from '../actions/index';
+import PopupDialog from '../../../../../components/Dialogs/PopupDialog';
 
 //Storage region
 const leftStorageZoneContainerStyle = {
@@ -35,9 +36,11 @@ const zoneBlockStyle = {
 };
 
 const horizontalLeftContentStyle = {
-  width:'120px',
+  display:'flex',
+  justifyContent:'center',
+  width:'90px',
   height:'24px',
-  background:'red',
+  background:'#AAAAAA',
   position:'absolute',
   bottom:'-12px',
   left:'50%',
@@ -46,12 +49,15 @@ const horizontalLeftContentStyle = {
 };
 
 const horizontalRightContentStyle = {
-  width:'120px',
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
+  width:'60px',
   height:'24px',
   background:'red',
   position:'absolute',
   top:'23px',
-  right:'-60px',
+  right:'-30px',
   transform:'translate(0%, -50%)',
   zIndex:'10'
 };
@@ -61,7 +67,7 @@ const horizontalLineTopStyle = {
   position:'absolute',
   bottom:'-2px',
   right:'-2px',
-  width:'40px',
+  width:'56px',
   zIndex:'10'
 };
 
@@ -70,7 +76,7 @@ const horizontalLineBottomStyle = {
   position:'absolute',
   bottom:'-2px',
   left:'-2px',
-  width:'40px',
+  width:'56px',
   zIndex:'10'
 };
 
@@ -103,13 +109,15 @@ const houseContainerStyle = {
 };
 
 const centerVerticalLineStyle = {
-  border:'1px solid #AAAAAA',
+  border:'1px solid blue',
   height:'150px',
   position:'absolute',
   left:'50%'
 };
 
 const wifiBoxStyle= {
+  display:'flex',
+  justifyContent:'center',
   width:'120px',
   height:'24px',
   background:'#AAAAAA',
@@ -121,7 +129,7 @@ const wifiBoxStyle= {
 };
 
 const centerContentStyle = {
-  border:'1px solid #AAAAAA',
+  border:'1px solid blue',
   width:'220px',
   height:'0px',
   position:'relative',
@@ -131,7 +139,7 @@ const centerContentStyle = {
 };
 
 const contentLeftVerticalLine = {
-  border:'1px solid #AAAAAA',
+  border:'1px solid blue',
   width:'0px',
   height:'10px',
   position:'absolute',
@@ -140,17 +148,19 @@ const contentLeftVerticalLine = {
 };
 
 const contentLeftZone = {
-  width:'120px',
+  display:'flex',
+  justifyContent:'center',
+  width:'90px',
   height:'24px',
-  background:'red',
+  background:'#AAAAAA',
   position:'absolute',
   top:'-24px',
-  left:'-60px',
+  left:'-45px',
   zIndex:'10'
 };
 
 const contentRightVerticalLine = {
-  border:'1px solid #AAAAAA',
+  border:'1px solid blue',
   width:'0px',
   height:'10px',
   position:'absolute',
@@ -159,12 +169,14 @@ const contentRightVerticalLine = {
 };
 
 const contentRightZone = {
-  width:'120px',
+  display:'flex',
+  justifyContent:'center',
+  width:'90px',
   height:'24px',
-  background:'red',
+  background:'#AAAAAA',
   position:'absolute',
   top:'-24px',
-  right:'-60px',
+  right:'-45px',
   zIndex:'10'
 };
 
@@ -184,15 +196,23 @@ const phBlockStyle = {
   position:'relative'
 }
 const phTopLeftBlockStyle = {
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
   width:'50px',
   height:'50px',
+  background:'#AAAAAA',
   borderRight:'2px solid #AAAAAA',
   borderBottom:'2px solid #AAAAAA'
 };
 
 const phBottomLeftBlockStyle = {
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
   width:'50px',
   height:'50px',
+  background:'#AAAAAA',
   borderRight:'2px solid #AAAAAA',
   borderTop:'2px solid #AAAAAA',
   position:'absolute',
@@ -200,8 +220,12 @@ const phBottomLeftBlockStyle = {
 };
 
 const phTopRightBlockStyle = {
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
   width:'50px',
   height:'50px',
+  background:'#AAAAAA',
   borderLeft:'2px solid #AAAAAA',
   borderBottom:'2px solid #AAAAAA',
   position:'absolute',
@@ -209,8 +233,12 @@ const phTopRightBlockStyle = {
 };
 
 const phBottomRightBlockStyle = {
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
   width:'50px',
   height:'50px',
+  background:'#AAAAAA',
   borderLeft:'2px solid #AAAAAA',
   borderTop:'2px solid #AAAAAA',
   position:'absolute',
@@ -219,6 +247,9 @@ const phBottomRightBlockStyle = {
 };
 
 const phPowerStyle = {
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
   background:'red',
   position:'absolute',
   width:'35%',
@@ -229,7 +260,7 @@ const phPowerStyle = {
 };
 
 const topLeftLineStyle = {
-  border:'1px solid #AAAAAA', 
+  border:'1px solid blue', 
   position:'absolute',
   width:'50px',
   left:'-46%',
@@ -238,7 +269,7 @@ const topLeftLineStyle = {
 };
 
 const bottomLeftLineStyle =  {
-  border:'1px solid #AAAAAA', 
+  border:'1px solid blue', 
   position:'absolute',
   width:'50px',
   left:'-46%',
@@ -247,7 +278,7 @@ const bottomLeftLineStyle =  {
 };
 
 const bottomRighLineStyle = {
-  border:'1px solid #AAAAAA', 
+  border:'1px solid blue', 
   position:'absolute',
   width:'50px',
   right:'-46%',
@@ -256,7 +287,7 @@ const bottomRighLineStyle = {
 };
 
 const topRightLineStyle = {
-  border:'1px solid #AAAAAA', 
+  border:'1px solid blue', 
   position:'absolute',
   width:'50px',
   right:'-46%',
@@ -268,20 +299,53 @@ class Area extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      errorDialogOpen: false,
+      errorDialogTitle: '',
+      errorDialogContent: ''
     };
   }
 
   componentDidMount() {
-    this.props.getAreaData(()=>console.log('success'));
+    this.props.getAreaData(() => {
+      this.setState({
+        errorDialogOpen: true,
+        errorDialogTitle: 'Error',
+        errorDialogContent: `Can't get zone data`
+      });
+    });
+  }
+
+  errorDialogCloseHandler = () => {
+    this.setState({ errorDialogOpen: false });
   }
 
   render() {
     return (
       <div className="container-fluid no-breadcrumbs content-page">
         <QueueAnim type="bottom" className="ui-animate">
-          <Paper className={'position-relative d-flex flex-column'}>
-            <div className={'d-flex flex-row justify-content-between align-items-start'}>
+          <Paper className={'position-relative d-flex flex-column'} style={{padding:'15px'}}>
+            <div className={'d-flex flex-row justify-content-between'}>
+              <div className={'d-flex flex-column'}>
+                <div>
+                  Walls
+                </div>
+                <div>
+                  Battery
+                </div>
+                <div>
+                  Coffee Toaster
+                </div>
+                <div>
+                  Ph meter
+                </div>
+                <div>
+                  Wifi Router
+                </div>
+                <div>
+                  Electric cable
+                </div>
+              </div>
+
               <div className={'d-flex flex-row'}>
                 <div style={leftStorageZoneContainerStyle}>
                   <div style={zoneBlockStyle}>
@@ -293,15 +357,15 @@ class Area extends Component {
 
                     <div style={horizontalLineTopStyle}>
                     
-                    </div>`
+                    </div>
                   </div>
                   <div style={zoneBlockStyle}>
                     <div style={verticalLineTopStyle}>
                     
                     </div>
 
-                    <div className={'d-flex align-items-center justify-content-center'} style={horizontalRightContentStyle}>
-                      <PowerIcon/>
+                    <div style={horizontalRightContentStyle}>
+                      <PowerIcon style={{color:'yellow'}}/>
                     </div>
 
                     <div style={verticalLineBottomStyle}>
@@ -322,8 +386,8 @@ class Area extends Component {
                     
                     </div>
 
-                    <div className={'d-flex align-items-center justify-content-center'} style={horizontalRightContentStyle}>
-                      <PowerIcon/>
+                    <div style={horizontalRightContentStyle}>
+                      <PowerIcon style={{color:'yellow'}}/>
                     </div>
 
                     <div style={verticalLineBottomStyle}>
@@ -344,8 +408,8 @@ class Area extends Component {
                     
                     </div>
 
-                    <div className={'d-flex align-items-center justify-content-center'} style={horizontalRightContentStyle}>
-                      <PowerIcon/>
+                    <div style={horizontalRightContentStyle}>
+                      <PowerIcon style={{color:'yellow'}}/>
                     </div>
 
                     <div style={verticalLineBottomStyle}>
@@ -366,8 +430,8 @@ class Area extends Component {
                     
                     </div>
 
-                    <div className={'d-flex align-items-center justify-content-center'} style={horizontalRightContentStyle}>
-                      <PowerIcon/>
+                    <div style={horizontalRightContentStyle}>
+                      <PowerIcon style={{color:'yellow'}}/>
                     </div>
 
                     <div style={verticalLineBottomStyle}>
@@ -450,7 +514,7 @@ class Area extends Component {
                       </div>
                     </div>
 
-                    <div className={'d-flex justify-content-center'} style={wifiBoxStyle}>
+                    <div style={wifiBoxStyle}>
                       <WifiIcon/>
                     </div>
                   </div>
@@ -462,29 +526,29 @@ class Area extends Component {
                   <div>
                     <div style={phBlockStyle}>
                       <div style={phTopLeftBlockStyle}>
-
+                        <PhIcon/>
                       </div>
                     </div>
                     <div style={phBlockStyle}>
                       <div style={phBottomLeftBlockStyle}>
-
+                        <PhIcon/>
                       </div>
                     </div>
                   </div>
                   <div>
                     <div style={phBlockStyle}>
                       <div style={phTopRightBlockStyle}>
-
+                        <PhIcon/>
                       </div>
                     </div>
                     <div style={phBlockStyle}>
                       <div style={phBottomRightBlockStyle}>
-
+                        <PhIcon/>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className={'d-flex align-items-center justify-content-center'} style={phPowerStyle}>
+                <div style={phPowerStyle}>
                   <div style={topLeftLineStyle}>
 
                   </div>
@@ -498,10 +562,16 @@ class Area extends Component {
 
                   </div>
 
-                  <PowerIcon/>
+                  <PowerIcon style={{color:'yellow',width:'36px',height:'36px'}}/>
                 </div>
               </div>
             </div>
+            <PopupDialog
+              dialogTitle={this.state.errorDialogTitle}
+              content={this.state.errorDialogContent}
+              isOpen={this.state.errorDialogOpen}
+              handleCloseModal={this.errorDialogCloseHandler}
+            />
           </Paper>
         </QueueAnim>
       </div>

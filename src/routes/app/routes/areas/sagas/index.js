@@ -7,7 +7,7 @@ function* areaData() {
   const INFINITE = true;
 
   while (INFINITE) {
-    const { payload, next } = yield take(GET_AREA_DATA);
+    const { next } = yield take(GET_AREA_DATA);
     try {
       yield put({ type: START_REQUEST });
       const response = yield all([
@@ -20,12 +20,12 @@ function* areaData() {
         yield put({ type: GET_ZONE_DATA_SUCCESS, payload: response[0].data });
         yield put({ type: GET_PH_ZONE_DATA_SUCCESS, payload: response[1].data });
         yield put({ type: STOP_REQUEST });
-        if(next && typeof next == 'function') {
-          next();
-        }
       }
     } catch (err) {
       yield put({ type: REQUEST_ERROR, payload: err.message || err });
+      if(next && typeof next == 'function') {
+        next();
+      }
     }
   }
 }

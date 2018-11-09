@@ -14,7 +14,6 @@ function authUser(state = {}, action) {
       return data;
     }
     case LOGOUT_SUCCESS: {
-      console.log('logout success');
       return {};
     }
     default: {

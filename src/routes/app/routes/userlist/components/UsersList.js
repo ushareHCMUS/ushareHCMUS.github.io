@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import QueueAnim from 'rc-queue-anim';
 import { connect } from 'react-redux';
-import { getUsers } from '../actions';
+import { 
+  getUsers, 
+  registerUser, 
+  activeUser,
+  deactiveUser
+} from '../actions';
 import {
   Paper,
   IconButton,
@@ -23,6 +28,7 @@ import ArrowDropDownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down'
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import { blue600, red600 } from 'material-ui/styles/colors';
 import AddUserDialog from '../../../../../components/Dialogs/AddUserDialog';
+import PopupDialog from '../../../../../components/Dialogs/PopupDialog';
 
 const headerTextStyle = {
   fontSize:'14px',
@@ -41,7 +47,10 @@ class UsersList extends Component {
       filterText:'',
       menuOpen:false,
       addingRole:'',
-      addUserDialogOpen:false
+      addUserDialogOpen:false,
+      popUpDialogTitle:'',
+      popUpDialogOpen: false,
+      popUpDialogMessage: ''
     }
   }
 
@@ -86,8 +95,63 @@ class UsersList extends Component {
     this.setState({ addUserDialogOpen: false });
   }
 
-  statusChangeHandler = (e) => {
+  statusChangeHandler = (e, isChecked) => {
+    //if active
+    const name = e.currentTarget.name;
+    if(isChecked) {
+      this.props.activeUser(e.currentTarget.id, () => {
+        //if success
+        this.setState({
+          popUpDialogTitle:'Activate User' ,
+          popUpDialogMessage: name + ' is now active .',
+          popUpDialogOpen: true,
+        });
+      }, this.userStatusChangeFailHandler);
+    } 
+    //if deactive
+    else {
+      this.props.deactiveUser(e.currentTarget.id, () => {
+        //if success
+        this.setState({
+          popUpDialogTitle:'Deactivate User' ,
+          popUpDialogMessage: name + ' has been deactivated .',
+          popUpDialogOpen: true,
+        });
+      }, this.userStatusChangeFailHandler);
+    }
+  }
 
+  userStatusChangeFailHandler = () => {
+    this.setState({
+      popUpDialogTitle:'Error' ,
+      popUpDialogMessage: 'Failed to change user status.',
+      popUpDialogOpen: true,
+    });
+  }
+
+  registerHandler = (data) => {
+    this.props.registerUser(data,
+      //success
+      (data) => {
+        this.setState({
+          popUpDialogTitle:'Success' ,
+          popUpDialogMessage: data.name + 'has been added.',
+          popUpDialogOpen: true,
+        });
+      },
+      //fail
+      (data) => {
+        console.log(data);
+        this.setState({
+          popUpDialogTitle:'Error',
+          popUpDialogMessage: 'Fail to add ' + data.role,
+          popUpDialogOpen: true,
+        });
+      });
+  }
+
+  popUpDialogCloseHandler = (e) => {
+    this.setState({ popUpDialogOpen: false });
   }
 
   render() {
@@ -194,6 +258,8 @@ class UsersList extends Component {
                         style={{marginRight:'15px',padding:'5px'}}
                         children=
                         {<Toggle
+                          id={user.id}
+                          name={user.name}
                           defaultToggled={user.status && user.status == "1"}
                           onToggle={this.statusChangeHandler}
                         />}
@@ -219,7 +285,14 @@ class UsersList extends Component {
             <AddUserDialog
               role={this.state.addingRole}
               open={this.state.addUserDialogOpen}
+              register={this.registerHandler}
               handleClose={this.userDialogCloseHandler}
+            />
+            <PopupDialog
+              dialogTitle={this.state.popUpDialogTitle}
+              content={this.state.popUpDialogMessage}
+              isOpen={this.state.popUpDialogOpen}
+              handleCloseModal={this.popUpDialogCloseHandler}
             />
           </Paper>
         </div>
@@ -235,7 +308,10 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = {
-  getUsers
+  getUsers,
+  registerUser,
+  activeUser,
+  deactiveUser
 };
 
 export default connect(mapStateToProps,mapDispatchToProps)(UsersList);

@@ -45,6 +45,7 @@ function chartData(state = {}, action) {
       }
 
       return {
+        ...state,
         regions_name,
         regions_data
       }      

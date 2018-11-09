@@ -1,4 +1,4 @@
-import { GET_ADMIN_SUCCESS, GET_MANAGER_SUCCESS, GET_USER_SUCCESS } from '../actions/';
+import { GET_ADMIN_SUCCESS, GET_MANAGER_SUCCESS, GET_USER_SUCCESS, REGISTER_USER_SUCCESS, ACTIVE_USER_SUCCESS, DEACTIVE_USER_SUCCESS } from '../actions/';
 import Auth from '../../../../../utils/Auth';
 
 function authUser(state = {}, action) {
@@ -40,6 +40,24 @@ function authUser(state = {}, action) {
         ...state,
         user:action.payload
       };
+    }
+    case REGISTER_USER_SUCCESS: {
+      return {
+        ...state,
+        newUser:action.payload
+      }
+    }
+    case ACTIVE_USER_SUCCESS: {
+      return {
+        ...state,
+        activeUserMessage:action.payload
+      }
+    }
+    case DEACTIVE_USER_SUCCESS: {
+      return {
+        ...state,
+        deactiveUserMessage:action.payload
+      }
     }
     default: {
       return state;

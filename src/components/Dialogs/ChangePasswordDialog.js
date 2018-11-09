@@ -22,6 +22,8 @@ class ChangePasswordDialog extends Component {
 
   componentWillReceiveProps() {
     this.setState({
+      newPass: '',
+      reenterPass: '',
       newPassError: '',
       reenterPassError: '',
     })
