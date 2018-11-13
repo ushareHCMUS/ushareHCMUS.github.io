@@ -3,7 +3,12 @@ import QueueAnim from 'rc-queue-anim';
 import DisplayChart from './DisplayChart';
 import { getData } from '../actions';
 import { connect } from 'react-redux';
+import { CSVLink } from 'react-csv';
+import { RaisedButton } from 'material-ui';
 
+const csvData = [
+  ["Time", "Nhiệt độ", "Độ ẩm", "pH"],
+];
 class Dashboard extends Component {
   constructor(props){
     super(props);
@@ -28,9 +33,11 @@ class Dashboard extends Component {
     return (
       <div className="container-fluid no-breadcrumbs content-page">
         <QueueAnim type="bottom" className="ui-animate">
+          <CSVLink data={csvData} filename={'data_info'}><RaisedButton label={'Download me'}></RaisedButton></CSVLink>
           <DisplayChart 
             type={'line'} //
             title={'Tempature Chart'}
+            target={'temperature'}
             regionsArr={this.state.regions_name}
             regionsData={this.state.regions_data}
             yAxisTitle={'°C'}
@@ -38,15 +45,17 @@ class Dashboard extends Component {
             yAxisMin={0}
             yAxisMinValue={10}
           />
-          {/* <DisplayChart 
-            type={'bar'} //
-            title={'Humidity Chart'}
-          />
-
           <DisplayChart 
-            type={'line'} //
-            title={'ph Chart'}
-          /> */}
+            type={'bar'}
+            title={'Humidity Chart'}
+            target={'humidity'}
+            regionsArr={this.state.regions_name}
+            regionsData={this.state.regions_data}
+            yAxisTitle={'%'}
+            yAxisMax={100}
+            yAxisMin={0}
+            yAxisMinValue={10}
+          />
         </QueueAnim>
       </div>
     );

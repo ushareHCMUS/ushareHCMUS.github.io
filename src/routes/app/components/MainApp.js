@@ -7,31 +7,40 @@ import Sidenav from 'components/Sidenav';
 import Footer from 'components/Footer';
 
 import PageLoading from 'components/PageLoading';
+import Auth from '../../../utils/Auth';
 
 function LoadingComponent() {
   return <div></div>;
 }
 
-let AsyncArea = loadable({
+const AsyncArea = loadable({
   loader: () => import('../routes/areas'),
   loading: LoadingComponent
 })
 
-let AsyncDashboard = loadable({
+const AsyncDashboard = loadable({
   loader: () => import('../routes/dashboard'),
   loading: LoadingComponent
 })
 
-let AsyncUserList = loadable({
+const AsyncUserList = loadable({
   loader: () => import('../routes/userlist'),
   loading: LoadingComponent
 })
 
 class MainApp extends React.Component {
+  authFilter = () => {
+    if(Auth.isAdmin()) {
+      return (
+        <div>
+          <Route path={`${this.props.match.url}/userlist`} component={AsyncUserList} />
+          <Route path={`${this.props.match.url}/areas`} component={AsyncArea} />
+        </div>
+      )
+    }
+  }
 
   render() {
-    const { match, location } = this.props;
-
     return (
       <div className="main-app-container">
         <Sidenav />
@@ -41,9 +50,8 @@ class MainApp extends React.Component {
             <div className="app-content">
               <div className="full-height">
                 <PageLoading open={this.props.requestStatus.sending} />
-                <Route path={`${match.url}/dashboard`} component={AsyncDashboard} />
-                <Route path={`${match.url}/userlist`} component={AsyncUserList} />
-                <Route path={`${match.url}/areas`} component={AsyncArea} />
+                <Route path={`${this.props.match.url}/dashboard`} component={AsyncDashboard} />
+                {this.authFilter()}
               </div>
             </div>
             <Footer />

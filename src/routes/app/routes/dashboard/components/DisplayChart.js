@@ -43,21 +43,17 @@ class DisplayChart extends Component {
           feature: {
             saveAsImage: {
               title:'Save'
-            }
+            },
           }
         },
         grid: {
-          top: 60,
-          left: 30,
-          right: 60,
-          bottom:30
         },
         xAxis: {
           type: 'category',
           scale: true,
           name: this.props.XAxisTitle,
-          boundaryGap: false,
-          data: this.createDateData()
+          boundaryGap: [0.2, 0.2],
+          data: this.createDateData(),
         },
         yAxis: {
           type: 'value',
@@ -67,9 +63,11 @@ class DisplayChart extends Component {
           min: this.props.yAxisMin,
           splitNumber: this.props.yAxisMinValue,
         },
-        dataZoom: {
+        dataZoom: [{
+          startValue:'00:00'}
+          ,{
           type:'inside',
-        },
+        }],
         series: [],
         legend: {
           data: [],
@@ -121,13 +119,6 @@ class DisplayChart extends Component {
     if(e.currentTarget.id != 'All') {
       selectedRegions.push(e.currentTarget.id);
       option.legend.data = [...selectedRegions];
-      
-      for(var i = 0;i < this.props.regionsData;i++) {
-        if(this.props.regionsData['zone_id'] == e.currentTarget.id) {
-          console.log()
-        }
-      }
-
       option.series.push({
         name:e.currentTarget.id,
         type:this.props.type,
@@ -137,17 +128,22 @@ class DisplayChart extends Component {
           }
         },
         data:(() => {
-          let res = [];
-          let len = 0;
-          while (len < 20) {
-            res.push((Math.random()*10 + 5).toFixed(1) - 0);
-            len++;
-          }
+          let res = []; 
+          this.props.regionsData.map(region => {
+            if(this.displayText(region.zone_id) == e.currentTarget.id) {
+              region.data_info.map(item => {
+                let currentDate = new Date(item.time)
+                if(currentDate - new Date(this.state.startDate) >= 0){
+                  res.push(item[this.props.target])
+                }
+              }); 
+            }
+          })
           return res;
         })()
       });
-    }
-    else {
+      option.xAxis.data = this.createDateData();
+    } else {
       this.props.regionsArr.map(item => {
         selectedRegions.push(this.displayText(item));
       })
@@ -161,15 +157,19 @@ class DisplayChart extends Component {
           }
         },
         data:(() => {
-          let res = [];
-          let len = 0;
-          while (len < 20) {
-            res.push((Math.random()*10 + 5).toFixed(1) - 0);
-            len++;
-          }
+          let res = []; 
+          this.props.regionsData.map(region => {
+            region.data_info.map(item => {
+              let currentDate = new Date(item.time)
+              if(currentDate - new Date(this.state.startDate) <= 0){
+                res.push(item[this.props.target])
+              }
+            }); 
+          })
           return res;
         })()
       }));
+      option.xAxis.data = this.createDateData();
     }
     this.setState({ selectedRegions, menuOpen, option });
   }
@@ -296,7 +296,7 @@ class DisplayChart extends Component {
               labelPosition={'after'}
               icon={<IntervalIcon/>}/>
           </div>
-        </div>
+        </div> 
 
         <div 
           className={'d-flex flex-row'}
