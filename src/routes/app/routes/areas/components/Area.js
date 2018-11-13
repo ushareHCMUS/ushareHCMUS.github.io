@@ -48,8 +48,6 @@ class Area extends Component {
     } else if(direction == 'right') {
       tooltipStyle.right = '-90px';
       tooltipStyle.top = '14px';
-    } else if(direction == 'bottom') {
-      
     }
     return (
       <IconButton
@@ -57,11 +55,14 @@ class Area extends Component {
         centerRipple={true}
         disableTouchRipple={true}
         tooltip=
-        {<div>
+        {zone_id == '1' ? 
+        <div>
           <div>Active</div>
-          <div>t° : 39°C</div>
-          <div>h  : 25% </div>
-          <div>ph : 6   </div>
+          <div>t° : 32.51°C</div>
+          <div>h  : 70.85% </div>
+        </div>:
+        <div>
+          InActive
         </div>}
         tooltipPosition={''}
         tooltipStyles={tooltipStyle}
@@ -87,14 +88,20 @@ class Area extends Component {
         centerRipple={true}
         disableTouchRipple={true}
         tooltip=
-        {<div>
+        {zone_id == '11' ? 
+        <div>
           <div>Active</div>
           <div>ph : 6   </div>
+        </div> 
+        :
+        <div>
+          InActive
         </div>}
         tooltipPosition={''}
         tooltipStyles={{
           width:'90px',
-          fontSize:'15px'
+          fontSize:'15px',
+          right:'-20px'
         }}
         style={{
           padding:'0px',

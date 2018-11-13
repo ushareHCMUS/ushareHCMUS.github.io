@@ -33,7 +33,7 @@ class Dashboard extends Component {
     return (
       <div className="container-fluid no-breadcrumbs content-page">
         <QueueAnim type="bottom" className="ui-animate">
-          <CSVLink data={csvData} filename={'data_info'}><RaisedButton label={'Download me'}></RaisedButton></CSVLink>
+          {/* <CSVLink data={csvData} filename={'data_info'}><RaisedButton label={'Download me'}></RaisedButton></CSVLink> */}
           <DisplayChart 
             type={'line'} //
             title={'Tempature Chart'}

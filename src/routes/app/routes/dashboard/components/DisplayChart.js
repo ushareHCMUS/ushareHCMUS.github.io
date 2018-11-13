@@ -112,25 +112,30 @@ class DisplayChart extends Component {
     return res;
   }
 
-  regionSelectHandler = (e) => {
+  regionSelectHandler = (id) => {
     let { selectedRegions, menuOpen, option } = this.state;
     menuOpen = false;
 
-    if(e.currentTarget.id != 'All') {
-      selectedRegions.push(e.currentTarget.id);
+    if(id != 'All') {
+      selectedRegions.push(id);
       option.legend.data = [...selectedRegions];
+
+      //Avoid duplicate id
+      option.series = option.series.filter((item) => item.name != id);
+      console.log(option.series);
+
       option.series.push({
-        name:e.currentTarget.id,
+        name:id,
         type:this.props.type,
         itemStyle:{
           normal: {
-            color:stringToColor(e.currentTarget.id),
+            color:stringToColor(id),
           }
         },
         data:(() => {
           let res = []; 
           this.props.regionsData.map(region => {
-            if(this.displayText(region.zone_id) == e.currentTarget.id) {
+            if(this.displayText(region.zone_id) == id) {
               region.data_info.map(item => {
                 let currentDate = new Date(item.time)
                 if(currentDate - new Date(this.state.startDate) >= 0){
@@ -144,10 +149,12 @@ class DisplayChart extends Component {
       });
       option.xAxis.data = this.createDateData();
     } else {
+      selectedRegions = [];
       this.props.regionsArr.map(item => {
         selectedRegions.push(this.displayText(item));
       })
       option.legend.data = [...selectedRegions];
+      option.series = [];
       option.series = selectedRegions.map(region => ({
         name:region,
         type:this.props.type,
@@ -204,10 +211,25 @@ class DisplayChart extends Component {
       endDate = getTomorrowDate(startDate);
     }
     this.setState({ startDate, endDate });
+
+    //check if apply all
+    let isApplyAll = this.props.regionsArr.length == this.state.selectedRegions.length;
+    if(isApplyAll) {
+      this.regionSelectHandler('All');
+    } else {
+
+    }
   }
 
   endDateChangeHandler = (endDate) => {
     this.setState({ endDate });
+    //check if apply all
+    let isApplyAll = this.props.regionsArr.length == this.state.selectedRegions.length;
+    if(isApplyAll) {
+      this.regionSelectHandler('All');
+    } else {
+
+    }
   }
 
   render() {
@@ -250,7 +272,7 @@ class DisplayChart extends Component {
                     id={this.displayText(region)}
                     key={region}
                     label={this.displayText(region)}
-                    onClick={this.regionSelectHandler}
+                    onClick={(e) => this.regionSelectHandler(e.currentTarget.id)}
                     labelPosition={'after'}/>)
                   )}
                 {regionsArr && regionsArr.length != 0 && 
@@ -259,7 +281,7 @@ class DisplayChart extends Component {
                     id={'All'}
                     key={'All'}
                     label={'All'}
-                    onClick={this.regionSelectHandler}
+                    onClick={(e) => this.regionSelectHandler(e.currentTarget.id)}
                     labelPosition={'after'}/>)}
               </div>
             </Popover>
