@@ -97,10 +97,13 @@ class DisplayChart extends Component {
     return 'Khu vực ' + text;
   }
 
-  createDateData() {
+  createDateData(start,end) {
     let startDate = today;
     let endDate = tomorrow;
-    if(this.state) {
+    if(start != undefined && end != undefined) {
+      startDate = start;
+      endDate = end;
+    } else if (this.state) {
       startDate = this.state.startDate;
       endDate = this.state.endDate;
     }
@@ -112,12 +115,14 @@ class DisplayChart extends Component {
     return res;
   }
 
-  regionSelectHandler = (id) => {
+  regionSelectHandler = (id,startDate,endDate) => {
     let { selectedRegions, menuOpen, option } = this.state;
     menuOpen = false;
 
     if(id != 'All') {
-      selectedRegions.push(id);
+      if(!selectedRegions.includes(id)){
+        selectedRegions.push(id);
+      }
       option.legend.data = [...selectedRegions];
 
       //Avoid duplicate id
@@ -145,7 +150,11 @@ class DisplayChart extends Component {
           return res;
         })()
       });
-      option.xAxis.data = this.createDateData();
+      if(startDate != undefined && endDate != undefined){
+        option.xAxis.data = this.createDateData(startDate,endDate);
+      } else {
+        option.xAxis.data = this.createDateData();
+      }
     } else {
       selectedRegions = [];
       this.props.regionsArr.map(item => {
@@ -174,8 +183,11 @@ class DisplayChart extends Component {
           return res;
         })()
       }));
-      console.log("sdfgh")
-      option.xAxis.data = this.createDateData();
+      if(startDate != undefined && endDate != undefined){
+        option.xAxis.data = this.createDateData(startDate,endDate);
+      } else {
+        option.xAxis.data = this.createDateData();
+      }
     }
     this.setState({ selectedRegions, menuOpen, option });
   }
@@ -214,9 +226,11 @@ class DisplayChart extends Component {
     //check if apply all
     let isApplyAll = this.props.regionsArr.length == this.state.selectedRegions.length;
     if(isApplyAll) {
-      this.regionSelectHandler('All');
+      this.regionSelectHandler('All',startDate,endDate);
     } else {
-
+      this.state.selectedRegions.map((region) => {
+        this.regionSelectHandler(region,startDate,endDate);
+      });
     }
   }
 
@@ -227,7 +241,9 @@ class DisplayChart extends Component {
     if(isApplyAll) {
       this.regionSelectHandler('All');
     } else {
-
+      this.state.selectedRegions.map((region) => {
+        this.regionSelectHandler(region);
+      });
     }
   }
 
@@ -329,6 +345,7 @@ class DisplayChart extends Component {
               <h6 style={{margin:'24px 8px 24px 0px'}}>From Date</h6>
               <RaisedButton 
                 label={formatUrlDateString(this.state.startDate)}
+                disabled={this.state.selectedRegions.length == 0}
                 style={{minWidth:'141px'}}
                 labelPosition={'after'}
                 icon={<CalendarIcon/>}
@@ -349,6 +366,7 @@ class DisplayChart extends Component {
               <h6 style={{margin:'24px 8px 24px 0px'}}>To Date</h6>
               <RaisedButton 
                 label={formatUrlDateString(this.state.endDate)}
+                disabled={this.state.selectedRegions.length == 0}
                 style={{minWidth:'141px',}}
                 labelPosition={'after'}
                 icon={<CalendarIcon/>}
