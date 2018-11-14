@@ -47,7 +47,11 @@ class Login extends React.Component {
       if(isEmail(data.email)){
         this.props.login(data,()=> {
           //if success
-          this.props.history.push('app/dashboard');
+          if(Auth.isAdmin()) {
+            this.props.history.push('app/dashboard');
+          } else {
+            this.props.history.push('app/areas');
+          }
         });
       } else {
         let { emailError } = this.state;

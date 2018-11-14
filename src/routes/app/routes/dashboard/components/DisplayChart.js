@@ -64,7 +64,7 @@ class DisplayChart extends Component {
           splitNumber: this.props.yAxisMinValue,
         },
         dataZoom: [{
-          startValue:'00:00'}
+          startValue:formatUrlDateString(today) + ' ' + formatUrlTimeString(today)}
           ,{
           type:'inside',
         }],
@@ -105,9 +105,9 @@ class DisplayChart extends Component {
       endDate = this.state.endDate;
     }
     let res = [];
-    while(startDate < endDate) {
-      res.push(formatUrlTimeString(startDate));
-      startDate = new Date(startDate.getTime() + 30 * 60 * 1000);
+    while(startDate <= endDate) {
+      res.push(formatUrlDateString(startDate) + ' ' + formatUrlTimeString(startDate));
+      startDate = new Date(startDate.getTime() + 5 * 60 * 1000);
     }
     return res;
   }
@@ -122,8 +122,6 @@ class DisplayChart extends Component {
 
       //Avoid duplicate id
       option.series = option.series.filter((item) => item.name != id);
-      console.log(option.series);
-
       option.series.push({
         name:id,
         type:this.props.type,
@@ -138,8 +136,8 @@ class DisplayChart extends Component {
             if(this.displayText(region.zone_id) == id) {
               region.data_info.map(item => {
                 let currentDate = new Date(item.time)
-                if(currentDate - new Date(this.state.startDate) >= 0){
-                  res.push(item[this.props.target])
+                if(currentDate - new Date(this.state.startDate) >= 0 && currentDate - new Date(this.state.endDate) <= 0){
+                  res.push(item[this.props.target]);
                 }
               }); 
             }
@@ -168,14 +166,15 @@ class DisplayChart extends Component {
           this.props.regionsData.map(region => {
             region.data_info.map(item => {
               let currentDate = new Date(item.time)
-              if(currentDate - new Date(this.state.startDate) <= 0){
-                res.push(item[this.props.target])
+              if(currentDate - new Date(this.state.startDate) >= 0 && currentDate - new Date(this.state.endDate) <= 0){
+                res.push(item[this.props.target]);
               }
             }); 
           })
           return res;
         })()
       }));
+      console.log("sdfgh")
       option.xAxis.data = this.createDateData();
     }
     this.setState({ selectedRegions, menuOpen, option });

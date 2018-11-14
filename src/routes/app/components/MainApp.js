@@ -30,13 +30,15 @@ const AsyncUserList = loadable({
 
 class MainApp extends React.Component {
   authFilter = () => {
-    if(Auth.isAdmin()) {
-      return (
-        <div>
-          <Route path={`${this.props.match.url}/userlist`} component={AsyncUserList} />
-          <Route path={`${this.props.match.url}/areas`} component={AsyncArea} />
-        </div>
-      )
+    if(!Auth.isUser()) {
+      if(Auth.isAdmin()) {
+        return (
+          <div>
+            <Route path={`${this.props.match.url}/userlist`} component={AsyncUserList} />
+            <Route path={`${this.props.match.url}/dashboard`} component={AsyncDashboard} />
+          </div>
+        )
+      }
     }
   }
 
@@ -50,7 +52,7 @@ class MainApp extends React.Component {
             <div className="app-content">
               <div className="full-height">
                 <PageLoading open={this.props.requestStatus.sending} />
-                <Route path={`${this.props.match.url}/dashboard`} component={AsyncDashboard} />
+                <Route path={`${this.props.match.url}/areas`} component={AsyncArea} />
                 {this.authFilter()}
               </div>
             </div>
