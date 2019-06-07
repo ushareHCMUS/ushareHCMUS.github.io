@@ -21,6 +21,7 @@ class Login extends React.Component {
       isError: false
     };
   }
+  
   componentWillReceiveProps(nextProps) {
     if (nextProps.requestStatus.error) {
       this.setState({ isError: true });
@@ -39,8 +40,13 @@ class Login extends React.Component {
 
     if(data.email != '' && data.password != ''){
       if(isEmail(data.email)){
-        console.log(data)
-        this.props.login(data);
+        this.props.login(data, () => {
+          this.props.history.push('/app/groups');
+        },() => {
+          this.setState({
+            isError: true
+          });
+        });
       } else {
         let { emailError } = this.state;
         emailError = `Wrong Email format`;
@@ -134,7 +140,7 @@ class Login extends React.Component {
           </QueueAnim>
           <PopupDialog
             dialogTitle={'Error'}
-            content={this.props.requestStatus.error}
+            content={'Error while login'}
             isOpen={this.state.isError}
             handleCloseModal={this.handleCloseErrorModal}
           />
@@ -152,7 +158,7 @@ function mapStateToProps(state) {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    login: (creds) => dispatch(login(creds))
+    login: (creds, onSuccess, onErr) => dispatch(login(creds, onSuccess, onErr))
   }
 }
 

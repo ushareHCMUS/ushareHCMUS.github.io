@@ -5,7 +5,7 @@ import requestStatus from './requestStatus';
 import authUser from '../routes/login/reducers';
 import { firestoreReducer } from 'redux-firestore';
 import { firebaseReducer } from 'react-redux-firebase';
-// import group from '../routes/app/routes/groups/';
+import group from '../routes/app/routes/groups/reducers/';
 // import news from '../routes/app/routes/groups/';
 // import room from '../routes/app/routes/groups/';
 
@@ -14,6 +14,7 @@ const reducers = {
   requestStatus,
   authUser,
   settings,
+  group,
   firestore: firestoreReducer,
   firebase: firebaseReducer
 };

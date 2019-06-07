@@ -12,6 +12,16 @@ function LoadingComponent() {
   return <div></div>;
 }
 
+const AsyncGroup = loadable({
+  loader: () => import('../routes/groups/'),
+  loading: LoadingComponent
+})
+
+const AsyncNews = loadable({
+  loader: () => import('../routes/news/'),
+  loading: LoadingComponent
+})
+
 class MainApp extends React.Component {
   render() {
     return (
@@ -23,6 +33,8 @@ class MainApp extends React.Component {
             <div className="app-content">
               <div className="full-height">
                 <PageLoading open={this.props.requestStatus.sending} />
+                <Route path={`${this.props.match.url}/groups`} component={AsyncGroup}/>
+                <Route path={`${this.props.match.url}/news`} component={AsyncNews} />
               </div>
             </div>
             <Footer />
