@@ -4,7 +4,6 @@ import classnames from 'classnames';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { Route, Redirect } from 'react-router-dom';
-import Auth from '../utils/Auth';
 
 import MainApp from 'routes/app/'
 import Page404 from 'routes/404/'
@@ -45,13 +44,7 @@ class App extends Component {
 
     const isRoot = location.pathname === '/' ? true : false;
     if (isRoot) {
-      if(Auth.isAdmin()) {
-        return ( <Redirect to={'/app/dashboard'}/> );
-      } else if (Auth.isManager()) {
-        return ( <Redirect to={'/app/areas'}/> );
-      } else if (Auth.isUser()) {
-        return ( <Redirect to={'/app/areas'}/> );
-      }
+      return ( <Redirect to={'/app/groups'}/> );
     }
 
     return (

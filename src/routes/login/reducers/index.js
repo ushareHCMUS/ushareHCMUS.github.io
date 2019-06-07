@@ -1,25 +1,25 @@
-import Auth from '../../../utils/Auth';
-import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from '../actions/index';
+const initState = {
+  authError: null,
+  uid: null
+}
 
-function authUser(state = {}, action) {
+const authReducer = (state = initState, action) => {
   switch (action.type) {
-    case LOGIN_SUCCESS: {
-      let data = action.payload;
-
-      const { token } = data.success;
-      delete data['success'];
-      data.token = token;
-
-      Auth.setAuth(data);
-      return data;
-    }
-    case LOGOUT_SUCCESS: {
-      return {};
-    }
-    default: {
+    case "LOGIN_ERROR":
+      return {
+        ...state,
+        authError: action.err.code
+      };
+    case 'LOGIN_SUCCESS':
+      return {
+        ...state,
+        authError: null
+      };
+    case 'SIGNOUT_SUCCESS':
       return state;
-    }
+    default: 
+      return state;
   }
 }
 
-export default authUser;
+export default authReducer

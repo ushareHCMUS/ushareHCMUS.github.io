@@ -9,7 +9,6 @@ import { login } from '../actions/';
 import PopupDialog from '../../../components/Dialogs/PopupDialog';
 import PasswordTextField from '../../../components/Dialogs/PasswordTextField';
 import { isEmail } from '../../../utils/helper';
-import Auth from '../../../utils/Auth';
 
 class Login extends React.Component {
   constructor() {
@@ -22,11 +21,6 @@ class Login extends React.Component {
       isError: false
     };
   }
-
-  componentDidMount() {
-    Auth.removeAuth();
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.requestStatus.error) {
       this.setState({ isError: true });
@@ -45,14 +39,8 @@ class Login extends React.Component {
 
     if(data.email != '' && data.password != ''){
       if(isEmail(data.email)){
-        this.props.login(data,()=> {
-          //if success
-          if(Auth.isAdmin()) {
-            this.props.history.push('app/dashboard');
-          } else {
-            this.props.history.push('app/areas');
-          }
-        });
+        console.log(data)
+        this.props.login(data);
       } else {
         let { emailError } = this.state;
         emailError = `Wrong Email format`;
@@ -68,10 +56,6 @@ class Login extends React.Component {
       }
       this.setState({ emailError, passwordError });
     }
-  }
-
-  registerHandler = () => {
-    this.props.history.push('/register');
   }
 
   emailChangeHandler = (e) => {
@@ -138,11 +122,6 @@ class Login extends React.Component {
                     </form>
                   </div>
                   <div className="card-action no-border text-right">
-                    {/* <FlatButton 
-                      style={{margin:'5px'}}
-                      onClick={this.registerHandler}>
-                      <span className="color-accent" style={{fontSize:'15px', fontWeight:'400'}}>Register</span>
-                    </FlatButton> */}
                     <FlatButton 
                       style={{margin:'5px'}}
                       onClick={this.loginHandler}>
@@ -159,7 +138,7 @@ class Login extends React.Component {
             isOpen={this.state.isError}
             handleCloseModal={this.handleCloseErrorModal}
           />
-        </div>asada
+        </div>
       </div>
     );
   }
@@ -171,8 +150,10 @@ function mapStateToProps(state) {
   }
 }
 
-const mapDispatchToProps = {
-  login,
+const mapDispatchToProps = (dispatch) => {
+  return {
+    login: (creds) => dispatch(login(creds))
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

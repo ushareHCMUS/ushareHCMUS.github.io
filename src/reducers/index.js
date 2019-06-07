@@ -3,16 +3,19 @@ import { routerReducer } from 'react-router-redux';
 import settings from './settings';
 import requestStatus from './requestStatus';
 import authUser from '../routes/login/reducers';
-import chartData from '../routes/app/routes/dashboard/reducers';
-import usersData from '../routes/app/routes/userlist/reducers';
+import { firestoreReducer } from 'redux-firestore';
+import { firebaseReducer } from 'react-redux-firebase';
+// import group from '../routes/app/routes/groups/';
+// import news from '../routes/app/routes/groups/';
+// import room from '../routes/app/routes/groups/';
 
 const reducers = {
   routing: routerReducer,
   requestStatus,
   authUser,
-  chartData,
-  usersData,
   settings,
+  firestore: firestoreReducer,
+  firebase: firebaseReducer
 };
 
 export default  combineReducers(reducers);

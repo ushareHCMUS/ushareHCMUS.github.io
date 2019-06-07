@@ -7,41 +7,12 @@ import Sidenav from 'components/Sidenav';
 import Footer from 'components/Footer';
 
 import PageLoading from 'components/PageLoading';
-import Auth from '../../../utils/Auth';
 
 function LoadingComponent() {
   return <div></div>;
 }
 
-const AsyncArea = loadable({
-  loader: () => import('../routes/areas'),
-  loading: LoadingComponent
-})
-
-const AsyncDashboard = loadable({
-  loader: () => import('../routes/dashboard'),
-  loading: LoadingComponent
-})
-
-const AsyncUserList = loadable({
-  loader: () => import('../routes/userlist'),
-  loading: LoadingComponent
-})
-
 class MainApp extends React.Component {
-  authFilter = () => {
-    if(!Auth.isUser()) {
-      if(Auth.isAdmin()) {
-        return (
-          <div>
-            <Route path={`${this.props.match.url}/userlist`} component={AsyncUserList} />
-            <Route path={`${this.props.match.url}/dashboard`} component={AsyncDashboard} />
-          </div>
-        )
-      }
-    }
-  }
-
   render() {
     return (
       <div className="main-app-container">
@@ -52,8 +23,6 @@ class MainApp extends React.Component {
             <div className="app-content">
               <div className="full-height">
                 <PageLoading open={this.props.requestStatus.sending} />
-                <Route path={`${this.props.match.url}/areas`} component={AsyncArea} />
-                {this.authFilter()}
               </div>
             </div>
             <Footer />

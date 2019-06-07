@@ -3,10 +3,8 @@ import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton/IconButton';
 import { connect } from 'react-redux';
-import Auth from '../../utils/Auth';
 import { logout, changePassword } from '../../routes/login/actions';
 import { withRouter } from 'react-router-dom';
-import ChangePasswordDialog from '../Dialogs/ChangePasswordDialog';
 import PopupDialog from '../Dialogs/PopupDialog';
 
 const ImgIconButtonStyle = {
@@ -33,7 +31,6 @@ class NavRightList extends React.Component {
     if(value == 'login') {
       this.props.logout();
       this.props.history.push('/login');
-      Auth.removeAuth();
     }
     else {
       this.setState({ dialogOpen:true });
@@ -42,24 +39,6 @@ class NavRightList extends React.Component {
 
   dialogCloseHandler = () => {
     this.setState({ dialogOpen : false });
-  }
-
-  changePasswordHandler = (data) => {
-    this.props.changePassword(data, () => {
-      //success
-      this.setState({ 
-        alertDialogOpen: true,
-        alertDialogTitle: 'Change Password Success',
-        alertDialogContent: 'Your password has been changed.'
-      });
-    }, () => {
-      //fail
-      this.setState({ 
-        alertDialogOpen: true,
-        alertDialogTitle: 'Change Password Fail',
-        alertDialogContent: 'Your password has not been changed.'
-      });
-    });
   }
 
   alertDialogCloseHandler = () => {
@@ -76,14 +55,12 @@ class NavRightList extends React.Component {
             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
             targetOrigin={{horizontal: 'right', vertical: 'top'}}
             menuStyle={{minWidth: '150px'}}>
-            {Auth.isAdmin && 
-              (<MenuItem
-                value="changePassword"
-                primaryText="Change Password"
-                innerDivStyle={listItemStyle}
-                style={{fontSize: '14px', lineHeight: '48px'}}
-                leftIcon={<i className="material-icons">vpn_key</i>}/>)
-            }
+            <MenuItem
+              value="changePassword"
+              primaryText="Change Password"
+              innerDivStyle={listItemStyle}
+              style={{fontSize: '14px', lineHeight: '48px'}}
+              leftIcon={<i className="material-icons">vpn_key</i>}/>
             <MenuItem
               value="login"
               primaryText="Log Out"
@@ -91,11 +68,6 @@ class NavRightList extends React.Component {
               style={{fontSize: '14px', lineHeight: '48px'}}
               leftIcon={<i className="material-icons">forward</i>}/>
           </IconMenu>
-          <ChangePasswordDialog
-            open={this.state.dialogOpen}
-            changePassword={this.changePasswordHandler}
-            handleClose={this.dialogCloseHandler}
-          />
           <PopupDialog
             dialogTitle={this.state.alertDialogTitle}
             content={this.state.alertDialogContent}

@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import FlatButton from 'material-ui/FlatButton';
 import 'jquery-slimscroll/jquery.slimscroll.min';
-import Auth from '../../utils/Auth';
 
 class SidebarContent extends React.Component {
 
@@ -94,12 +93,6 @@ class SidebarContent extends React.Component {
         <li className="nav-header"><span>Navigation</span></li>
         {/* User function */}
         <li><FlatButton href="#/app/areas"><i className="nav-icon material-icons">dashboard</i><span className="nav-text">Area</span></FlatButton></li>
-        
-        {/* Manager function */}
-        {(Auth.isManager() || Auth.isAdmin()) && <li><FlatButton href="#/app/dashboard"><i className="nav-icon material-icons">timeline</i><span className="nav-text">Dashboard</span></FlatButton></li>}
-
-        {/* Admin function*/}
-        {Auth.isAdmin() && <li><FlatButton href="#/app/userlist"><i className="nav-icon material-icons">people</i><span className="nav-text">Users List</span></FlatButton></li>}
       </ul>
     );
   }

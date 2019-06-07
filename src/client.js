@@ -10,25 +10,30 @@ import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import reducers from './reducers';
 import App from './containers/App';
 import logger from 'redux-logger';
+import { getFirestore, reduxFirestore } from 'redux-firestore';
+import { getFirebase, reactReduxFirebase } from 'react-redux-firebase';
+import firebaseConfig from './constants/FirebaseConfig';
+import thunk from 'redux-thunk';
 
 import Page404 from 'routes/404/components/404';
 
-import createSagaMiddleware from 'redux-saga';
-import mySaga from './sagas';
- 
 const history = createHistory();
 const historyMiddleware = routerMiddleware(history);
-const sagaMiddleware = createSagaMiddleware();
+const middleWareArr = [
+  historyMiddleware,
+  logger,
+  thunk.withExtraArgument({ getFirebase, getFirestore }),
+]
 
-const middlewareArr = [historyMiddleware, sagaMiddleware];
-middlewareArr.push(logger);
 const store = createStore(
   reducers,
   undefined,
-  compose(applyMiddleware(...middlewareArr))
+  compose(
+    applyMiddleware(...middleWareArr),
+    reduxFirestore(firebaseConfig),
+    reactReduxFirebase(firebaseConfig, {attachAuthIsReady: true}),
+  ),
 );
-
-sagaMiddleware.run(mySaga);
 
 render(
   <Provider store={store}>

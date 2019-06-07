@@ -1,5 +1,3 @@
-import Auth from './Auth';
-
 function convertTimeNumber(time) {
     return (time.toString().length >= 2 ? time.toString() : '0' + time);
 }
