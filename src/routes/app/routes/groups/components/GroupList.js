@@ -3,7 +3,9 @@ import Group from './Group';
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
-import { Redirect } from 'react-router-dom'
+import PageLoading from '../../../../../components/PageLoading/';
+import QueueAnim from 'rc-queue-anim';
+import { Redirect } from 'react-router-dom';
 
 class GroupList extends Component {
 
@@ -32,7 +34,6 @@ class GroupList extends Component {
         this.setState({
           groups
         })
-      console.log(this.state.groups);
     });
   }
 
@@ -55,30 +56,28 @@ class GroupList extends Component {
     if (groups) {
       this.changeState(groups);
       return (
-        <div className='container'>
-          <ul className="collection with-header">
-            <li className="collection-header"><h4 className='mx-auto'>Groups list</h4></li>
-            <li className='collection-item'>
-              <form className='nav-wrapper' onSubmit={this.handleSubmit}>
-                <div className="input-field">
-                  <input id="search" type="search" onChange={this.handleSearch} value={this.state.search} />
-                  <label className="label-icon" htmlFor="search"><i className="material-icons">search</i></label>
-                  <i className="material-icons">close</i>
-                </div>
-              </form>
-            </li>
-            <Group groups={this.state.groups} />
-          </ul>
-        </div>
+        <QueueAnim type="bottom" className="ui-animate">
+            <div className='container' key="1">
+              <ul className="collection with-header">
+                <li className="collection-header"><h4 className='mx-auto'>Groups list</h4></li>
+                <li className='collection-item'>
+                  <form className='nav-wrapper' onSubmit={this.handleSubmit}>
+                    <div className="input-field">
+                      <input id="search" type="search" onChange={this.handleSearch} value={this.state.search} />
+                      <label className="label-icon" htmlFor="search"><i className="material-icons">search</i></label>
+                      <i className="material-icons">close</i>
+                    </div>
+                  </form>
+                </li>
+                <Group groups={this.state.groups} />
+              </ul>
+            </div>
+        </QueueAnim>
       )
     }
     else {
       return (
-        <div className='container'>
-          <ul className="collection with-header">
-            <h2 className="page-header text-center">Page loading</h2>
-          </ul>
-        </div>
+        <PageLoading open={true}/>
       )
     }
   }
