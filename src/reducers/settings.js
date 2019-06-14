@@ -12,7 +12,6 @@ import {
 const initialSettings = APPCONFIG.settings;
 
 const settings = (state = initialSettings, action) => {
-    // console.log(action)
   switch (action.type) {
     case TOGGLE_BOXED_LAYOUT:
       return {

@@ -22,6 +22,11 @@ const AsyncNews = loadable({
   loading: LoadingComponent
 })
 
+const AsyncRooms = loadable({
+  loader: () => import('../routes/rooms/'),
+  loading: LoadingComponent
+})
+
 class MainApp extends React.Component {
   render() {
     return (
@@ -35,6 +40,7 @@ class MainApp extends React.Component {
                 <PageLoading open={this.props.requestStatus.sending} />
                 <Route path={`${this.props.match.url}/groups`} component={AsyncGroup}/>
                 <Route path={`${this.props.match.url}/news`} component={AsyncNews} />
+                <Route path={`${this.props.match.url}/rooms`} component={AsyncRooms} />
               </div>
             </div>
             <Footer />

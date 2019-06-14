@@ -70,7 +70,6 @@ class SidebarContent extends React.Component {
         const $link = $(link);
         const $li = $link.parent('li');
         const href = $link.attr('href');
-        // console.log(href);
 
         if ($li.hasClass('active')) {
           $li.removeClass('active');
@@ -90,11 +89,9 @@ class SidebarContent extends React.Component {
   render() {
     return (
       <ul className="nav" ref={(c) => { this.nav = c; }}>
-        <li className="nav-header"><span>Navigation</span></li>
-        {/* User function */}
         <li><FlatButton href="#/app/groups"><i className="nav-icon material-icons">people</i><span className="nav-text">Nhóm</span></FlatButton></li>
         <li><FlatButton href="#/app/news"><i className="nav-icon material-icons">notifications</i><span className="nav-text">Bảng tin</span></FlatButton></li>
-        <li><FlatButton href="#/app/room"><i className="nav-icon material-icons">dashboard</i><span className="nav-text">Đặt phòng</span></FlatButton></li>
+        <li><FlatButton href="#/app/rooms"><i className="nav-icon material-icons">dashboard</i><span className="nav-text">Đặt phòng</span></FlatButton></li>
       </ul>
     );
   }
