@@ -29,7 +29,7 @@ class NavRightList extends React.Component {
 
   handleChange = (event, value) => {
     if(value == 'login') {
-      this.props.logout();
+      // this.props.logout();
       this.props.history.push('/login');
     }
     else {
@@ -55,12 +55,12 @@ class NavRightList extends React.Component {
             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
             targetOrigin={{horizontal: 'right', vertical: 'top'}}
             menuStyle={{minWidth: '150px'}}>
-            <MenuItem
+            {/* <MenuItem
               value="changePassword"
               primaryText="Change Password"
               innerDivStyle={listItemStyle}
               style={{fontSize: '14px', lineHeight: '48px'}}
-              leftIcon={<i className="material-icons">vpn_key</i>}/>
+              leftIcon={<i className="material-icons">vpn_key</i>}/> */}
             <MenuItem
               value="login"
               primaryText="Log Out"

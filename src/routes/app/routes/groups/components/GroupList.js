@@ -5,7 +5,7 @@ import { compose } from 'redux';
 import PageLoading from '../../../../../components/PageLoading/';
 import QueueAnim from 'rc-queue-anim';
 import { Redirect } from 'react-router-dom';
-// import AddMemberDialog from './AddMemberDialog';
+import AddGroupDialog from './AddGroupDialog';
 import { Link } from 'react-router-dom';
 import { formatUrlDateString } from '../../../../../utils/helper';
 import {
@@ -27,6 +27,8 @@ import {
 import PersonAdd from 'material-ui/svg-icons/social/person-add';
 import ArrowDropDownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import SearchIcon from 'material-ui/svg-icons/action/search';
+import { addGroup } from '../actions/';
+
 
 const headerTextStyle = {
   fontSize:'18px',
@@ -43,38 +45,14 @@ class GroupList extends Component {
 
     this.state = {
       search: '',
-      groups: null,
       menuOpen: false,
-      addUserDialogOpen: false,
+      addGroupDialogOpen: false,
     }
   }
 
   handleSearch = (e) => {
-    const { groups } = this.props;
-    this.setState({
-      [e.target.id]: e.target.value
-    }, () => {
-
-      if (this.state.search !== '' || this.state.search !== null) {
-        const filteredGroups = groups.filter(group => 
-          (group.groupName.toLowerCase().includes(this.state.search.toLowerCase())) ||
-          (group.groupDescription.toLowerCase().includes(this.state.search.toLowerCase())));
-        this.setState({
-          groups: filteredGroups
-        })
-      }
-      if (this.state.search === null || this.state.search === '')
-        this.setState({
-          groups
-        })
-    });
-  }
-
-  changeState = (groups) => {
-    if (this.state.groups === null)
-      this.setState({
-        groups
-      })
+    const search = e.currentTarget.value;
+    this.setState({ search });
   }
 
   handleSubmit = (e) => {
@@ -95,7 +73,7 @@ class GroupList extends Component {
   menuItemClickHandler = (e, menuItem) => {
     this.setState({ 
       menuOpen: false,
-      addUserDialogOpen: true,
+      addGroupDialogOpen: true,
     });
   }
 
@@ -105,6 +83,15 @@ class GroupList extends Component {
       className={'text-center'} 
       style={bodyTextStyle}>
       {(content == '' || content == undefined) ? <span style={{fontWeight:'500'}}><i>No information</i></span> : <span style={{fontWeight:'500'}}>{content}</span>}
+    </TableRowColumn>
+  }
+
+  renderMembersCol(content) {
+    return <TableRowColumn 
+      width={'20%'} 
+      className={'text-center'} 
+      style={bodyTextStyle}>
+      {(content == '' || content == undefined) ? <span style={{fontWeight:'500'}}>0</span> : <span style={{fontWeight:'500'}}>{content}</span>}
     </TableRowColumn>
   }
 
@@ -120,11 +107,15 @@ class GroupList extends Component {
   }
 
   render() {
-    const { groups, auth } = this.props;
-
+    const { auth } = this.props;
     if(!auth.uid && !auth) return <Redirect to='/login'></Redirect>
-    if (groups) {
-      this.changeState(this.props.groups);
+    if (this.props.groups) {
+      let groups = JSON.parse(JSON.stringify(this.props.groups))
+      if(this.state.search != '') {
+        groups = groups.filter((group) => group.groupDescription.toLowerCase().includes(this.state.search) || 
+          group.groupName.toLowerCase().includes(this.state.search)
+        )
+      }
 
       return (
         <QueueAnim type="bottom" className="ui-animate">
@@ -196,8 +187,7 @@ class GroupList extends Component {
                 deselectOnClickaway={true}
                 showRowHover={true}
                 displayRowCheckbox={false}>
-                {this.state.groups ? 
-                (this.state.groups.length != 0 ? this.state.groups.map((group, index) =>
+                {groups && groups.length != 0 ? groups.map((group, index) =>
                   (<Link to={`app/groups/${group.id}`} style={{ textDecoration: 'none' }} key={group.id}>
                     <TableRow
                       key={index} 
@@ -208,7 +198,7 @@ class GroupList extends Component {
                       {this.renderAvatar(group.groupImage)}
                       {this.renderCol(group.groupName)}
                       {this.renderCol(group.groupDescription)}
-                      {this.renderCol(group.members.length)}
+                      {this.renderMembersCol(group.members.length)}
                       {this.renderCol(formatUrlDateString(group.timeCreated.seconds * 1000))}
                     </TableRow>
                   </Link>)
@@ -223,29 +213,19 @@ class GroupList extends Component {
                       </div>
                     </TableRowColumn>
                   </TableRow>)
-                )
-                :
-                (<TableRow>
-                  <TableRowColumn>
-                    <div className='text-center' style={{opacity:0.36,fontSize:'18px',fontWeight:'bold'}}>
-                      <i>
-                        Không có thông tin
-                      </i>
-                    </div>
-                  </TableRowColumn>
-                </TableRow>)
               }
               </TableBody>
             </Table>
           </Paper>
-          {/* <AddMemberDialog
-            open={this.state.addUserDialogOpen}
+          <AddGroupDialog
+            open={this.state.addGroupDialogOpen}
+            addGroup={this.props.addGroup}
             handleClose={() => {
               this.setState({
-                addUserDialogOpen: false
+                addGroupDialogOpen: false
               })
             }}
-          /> */}
+          />
         </QueueAnim>
       )
     }
@@ -260,15 +240,25 @@ class GroupList extends Component {
 const mapStateToProps = (state) => {
   const groups = state.firestore.ordered.groups;
   const groupsList = groups ? groups.filter(group => (group.id !== 'hcmus')) : null;
+  const users = state.firestore.ordered.users;
+  // const filteredUsers = users ?  : []
   return {
     groups: groupsList,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    users: users
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addGroup: (groupInfo) => dispatch(addGroup(groupInfo))
   }
 }
 
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([
-    { collection: 'groups' }
+    { collection: 'groups' },
+    { collection: 'users' }
   ])
 )(GroupList)

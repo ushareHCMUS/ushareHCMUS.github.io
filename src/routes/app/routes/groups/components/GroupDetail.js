@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { Redirect } from 'react-router-dom';
-import AddMemberDialog from './AddMemberDialog';
+// import AddMemberDialog from './AddMemberDialog';
 import { removeMember, changeRemoveStatus } from '../actions/';
 import PageLoading from '../../../../../components/PageLoading/';
 import {
@@ -273,7 +273,7 @@ class GroupDetails extends Component {
           }
         </div>
       </div>
-      <AddMemberDialog
+      {/* <AddMemberDialog
         open={this.state.addUserDialogOpen}
         data={this.props.nonUsers}
         handleClose={() => {
@@ -281,7 +281,7 @@ class GroupDetails extends Component {
             addUserDialogOpen: false
           })
         }}
-      />
+      /> */}
     </QueueAnim>
     }
     else {

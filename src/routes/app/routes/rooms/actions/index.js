@@ -1,36 +1,39 @@
-export const acceptRoomBooking = (member, group) => {
+export const changeRoomBookingStatus = (bookingId ,bookingData) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     var batch = firestore.batch();
-    
-    batch.update(firestore.collection('groups').doc(group), {
-      members: firestore.FieldValue.arrayUnion(member)
+
+    batch.update(firestore.collection('room_booking').doc(bookingId), {
+      status: bookingData.status,
     });
-    batch.update(firestore.collection('users').doc(member), {
-      groups: firestore.FieldValue.arrayUnion(group)
-    })
     batch.commit().then(() => {
-      dispatch({ type: 'ADD_MEMBER', member: member, group: group });
+      dispatch({ type: 'CHANGE_ROOM_BOOKING_STATUS' });
     }).catch((err) => {
-      dispatch({ type: 'ADD_MEMBER_ERROR', err });
+      dispatch({ type: 'CHANGE_ROOM_BOOKING_STATUS_ERROR', err });
     })
   }
 }
 
-export const rejectRoomBooking = (member, group) => {
+function createRandomString( length ) {
+  var str = "";
+  for ( ; str.length < length; str += Math.random().toString( 36 ).substr( 2 ) );
+  return str.substr( 0, length );
+}
+
+export const addRoomBookingNoti = (notiData) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     var batch = firestore.batch();
-    batch.update(firestore.collection('groups').doc(group), {
-      members: firestore.FieldValue.arrayRemove(member)
+    batch.set(firestore.collection('room_booking_noti').doc(createRandomString(20)), {
+      ...notiData,
+      timeStamp: firestore.FieldValue.serverTimestamp(),
+      date: firestore.FieldValue.serverTimestamp(),
     });
-    batch.update(firestore.collection('users').doc(member), {
-      groups: firestore.FieldValue.arrayRemove(group)
-    })
+
     batch.commit().then(() => {
-      dispatch({ type: 'REMOVE_MEMBER', member: member, group: group });
+      dispatch({ type: 'ADD_BOOKING_NOTI'});
     }).catch((err) => {
-      dispatch({ type: 'REMOVE_MEMBER_ERROR', err });
+      dispatch({ type: 'ADD_BOOKING_NOTI_ERROR', err });
     })
   }
 }
