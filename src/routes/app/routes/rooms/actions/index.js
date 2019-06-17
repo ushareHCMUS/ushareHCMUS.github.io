@@ -26,8 +26,8 @@ export const addRoomBookingNoti = (notiData) => {
     var batch = firestore.batch();
     batch.set(firestore.collection('room_booking_noti').doc(createRandomString(20)), {
       ...notiData,
-      timeStamp: firestore.FieldValue.serverTimestamp(),
-      date: firestore.FieldValue.serverTimestamp(),
+      date: new Date(notiData.date.seconds * 1000),
+      timeRequest: firestore.FieldValue.serverTimestamp(),
     });
 
     batch.commit().then(() => {

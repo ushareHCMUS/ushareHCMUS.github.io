@@ -151,11 +151,12 @@ class Rooms extends Component {
                 label="Từ chối"
                 onClick={(e) => {
                   let tmp1 = JSON.parse(JSON.stringify(tmp));
-                  delete tmp1.content;
-                  delete tmp1.timeRequest;
+                  // delete tmp1.content;
+                  // delete tmp1.timeRequest;
                   tmp1.success = true;
                   tmp1.status = -1;
                   tmp1.message = "Yêu cầu đặt phòng bị từ chối, Lý do: ";
+                  console.log(tmp1)
                   this.setState({ 
                     declineDialogOpen: true,
                     declineData: tmp1
