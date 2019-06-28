@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { Redirect } from 'react-router-dom';
-// import AddMemberDialog from './AddMemberDialog';
-import { removeMember, changeRemoveStatus } from '../actions/';
+import AddMemberDialog from './AddMemberDialog';
+import { removeMember, changeRemoveStatus, addMember } from '../actions/';
 import PageLoading from '../../../../../components/PageLoading/';
 import {
   Paper,
@@ -12,180 +12,41 @@ import {
   TextField,
   IconButton,
   RaisedButton,
-  MenuItem
+  MenuItem,
+  FlatButton
 } from 'material-ui';
 import QueueAnim from 'rc-queue-anim';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import ImportantIcon from 'material-ui/svg-icons/toggle/star';
+import { formatUrlDateString, formatUrlTimeString } from '../../../../../utils/helper';
 
 class GroupDetails extends Component {
 
   constructor(props) {
     super(props)
 
-    this.handleShow = this.handleShow.bind(this);
-    this.handleClose = this.handleClose.bind(this);
     this.state = {
-      show: false,
       userId: '',
-      removeBtn: true,
       userSearch: '',
-      users: null,
       newsSearch: '',
-      news: null,
-      addUserDialogOpen: false,
+      addMemberDialogOpen: false,
     };
   }
 
-  handleClose() {
-    this.setState({
-      show: false,
-      userId: ''
-    });
-    this.props.changeRemoveStatus();
-  }
-
-  handleShow() {
-    this.setState({ show: true });
-  }
-
-  handleClick = (userId) => {
-    this.setState({
-      userId: userId
-    })
-    this.handleShow();
-  }
-
-  handleRemove = () => {
-    this.props.removeMember(this.state.userId, this.props.group.id);
-  }
-
-  handleNoti = () => {
-    if (this.props.status === "Success")
-      return (
-        <div className="alert alert-success alert-dismissible fade show" role="alert">
-          Successfully removed {this.state.userId}
-        </div>
-      )
-    if (this.props.status !== null && this.props.status !== "Success")
-      return (
-        <div className="alert alert-danger alert-dismissible fade show" role="alert">
-          {this.props.status}
-        </div>
-      )
-  }
-
-  removeBtn = () => {
-    if (this.props.status === null)
-      return (
-        <Button variant="danger" onClick={this.handleRemove}>Remove</Button>
-      )
-  }
-
   handleUserSearch = (e) => {
-    const { users } = this.props;
     this.setState({
-      [e.target.id]: e.target.value
-    }, () => {
-
-      if (this.state.userSearch !== '' || this.state.userSearch !== null) {
-        const filteredUsers = users.filter(user =>
-          (
-            user.name.toLowerCase().includes(this.state.userSearch.toLocaleLowerCase()) || user.id.includes(this.state.userSearch)
-          )
-        );
-        this.setState({
-          users: filteredUsers
-        })
-      }
-      if (this.state.userSearch === null || this.state.userSearch === '' || this.state.users === null)
-        this.setState({
-          users
-        })
+      userSearch: e.currentTarget.value
     });
   }
 
   handleNewsSearch = (e) => {
-    const { news } = this.props;
-    if (this.state.news === null)
-      this.setState({ news: this.props.news });
     this.setState({
-      [e.target.id]: e.target.value
-    }, () => {
-
-      if (this.state.newsSearch !== '' || this.state.newsSearch !== null) {
-        const filteredNews = news.filter(single =>
-          (
-            single.title.toLowerCase().includes(this.state.newsSearch.toLocaleLowerCase())
-          )
-        );
-        this.setState({
-          news: filteredNews
-        })
-      }
-      if (this.state.newsSearch === null || this.state.newsSearch === '' || this.state.news === null)
-        this.setState({
-          news
-        })
-    });
-  }
-
-  changeState = () => {
-    if (this.state.users === null)
-      this.setState({ users: this.props.users });
+      newsSearch: e.currentTarget.value
+    })
   }
 
   handleSubmit = (e) => {
     e.preventDefault();
-  }
-
-  renderNews = (news) => {
-      return (
-        news && (!this.state.news ? (news.length != 0 ? news.map(single => (
-            // <Link to={`/news/${single.id}`} style={{ textDecoration: 'none' }} key={single.id}>
-              <Paper className="card" key={single.id}>
-                <div className="card-body">
-                  <h5>{single.title}</h5>
-                </div>
-                <div className="card-footer text-muted">
-                  {single.timeStamp.toDate().toString()}
-                  {
-                    single.isImportant ? <ImportantIcon/> : null
-                  }
-                </div>
-              </Paper>
-            // </Link>
-          )) :
-          (<Paper style={{marginTop: "10px", height: "40px"}} className='text-center d-flex justify-content-center align-items-center'>
-            <i style={{opacity:0.36,fontSize:'18px',fontWeight:'bold'}}>
-              Không có thông tin
-            </i>
-          </Paper>)
-        )
-        :
-        (this.state.news.length != 0 ? this.state.news.map(single => (
-          // <Link to={`/news/${single.id}`} style={{ textDecoration: 'none' }} key={single.id}>
-            <div className="card" key={single.id}>
-              <div className="card-body">
-                <h5>{single.title}</h5>
-              </div>
-              <div className="card-footer text-muted">
-                {single.timeStamp.toDate().toString()}
-                {
-                  single.isImportant ? <ImportantIcon/> : null
-                }
-              </div>
-            </div>
-          // </Link>
-        )) :
-        (<Paper style={{marginTop: "10px",height: "40px"}} className='text-center d-flex justify-content-center align-items-center'>
-          <i style={{opacity:0.36,fontSize:'18px',fontWeight:'bold'}}>
-            Không có thông tin
-          </i>
-        </Paper>)
-        )
-      )
-    );
   }
 
   componentWillReceiveProps = (newProps) => {
@@ -195,14 +56,84 @@ class GroupDetails extends Component {
       })
   }
 
+  renderNews(oriNews) {
+    let news = JSON.parse(JSON.stringify(oriNews));
+
+    if(this.state.newsSearch != '') {
+      news = news.filter((item) => item.title.toLowerCase().includes(this.state.newsSearch))
+    }
+    return news && news.length != 0 ? news.map(single => (
+      <Paper className="card" key={single.id}>
+        <div className="card-header">
+          {
+            single.isImportant ? <ImportantIcon/> : null
+          }
+        </div>
+        <div className="card-body">
+          <h5>{single.title}</h5>
+        </div>
+        <div className="card-footer text-muted d-flex flex-row align-items-center justify-content-between">
+          <b>{'Đăng vào lúc : '}</b> {formatUrlTimeString(single.timeStamp.seconds * 1000) + " " + formatUrlDateString(single.timeStamp.seconds * 1000)}
+        </div>
+      </Paper>
+    )) :
+    (<Paper style={{marginTop: "10px", height: "40px"}} className='text-center d-flex justify-content-center align-items-center'>
+      <i style={{opacity:0.36,fontSize:'18px',fontWeight:'bold'}}>
+        Không có thông tin
+      </i>
+    </Paper>)
+  }
+
+  renderUsers(oriUsers, groupId) {
+    let users = JSON.parse(JSON.stringify(oriUsers));
+
+    if(this.state.userSearch != '') {
+      users = users.filter((item) => item.name.toLowerCase().includes(this.state.userSearch) 
+                                  || item.department.toLowerCase().includes(this.state.userSearch)
+                                  || item.username.toLowerCase().includes(this.state.userSearch))
+    }
+
+    return users && users.length != 0 ? users.map(user => (
+        <Paper className="d-flex align-items-center justify-content-between" key={user.id} style={{margin:'10px 0px'}}>
+          <div className="d-flex flex-row align-items-center justify-content-center">
+            <Avatar 
+              src={user.avatar}
+              size={80}
+              style={{margin:'10px'}}
+            />
+            <div className="d-flex flex-column align-items-start justify-content-center" style={{width:'75%'}}>
+              <span className="title">{user.name}</span>
+              <span>{user.username}</span> 
+              <span>{user.department}</span>
+            </div>
+          </div>
+          <FlatButton
+            label={'Xoá'}
+            style={{color:'red',marginRight:'10px'}}
+            onClick={() => {
+              this.props.removeMember(user.username ,groupId)
+            }}
+          />
+        </Paper>)
+      ) :
+      (<Paper style={{margin: "10px 0px", height: "40px"}} className='text-center d-flex justify-content-center align-items-center'>
+        <i style={{opacity:0.36,fontSize:'18px',fontWeight:'bold'}}>
+          Không có thông tin
+        </i>
+      </Paper>)
+  }
+
   render() {
 
     const { group, users, news, auth, nonUsers } = this.props;
     if (!group) return <Redirect to='/'></Redirect>
     if (!auth.uid && !auth) return <Redirect to='/login'></Redirect>
     if (group && users && news && nonUsers) {
-      this.changeState();
-        
+      var groupId = ''
+      if(group) {
+        groupId = group.groupId
+      }
+
       return <QueueAnim type="bottom" className="container ui-animate">
       <Paper key="1">
         <h2 className="page-header text-center" style={{padding:'10px 0px'}}>{group.groupName}</h2>
@@ -220,34 +151,17 @@ class GroupDetails extends Component {
             <TextField
               underlineShow={false}
               fullWidth={true}
-              hintText={'Seach by name or email'}
+              hintText={'Tìm kiếm theo tên hoặc mã số sinh viên'}
               id="userSearch" type="search"
               value={this.state.userSearch}
               onChange={this.handleUserSearch}
             />
           </Paper>
-          {
-            this.state.users && this.state.users.length != 0 ? this.state.users.map(user => (
-              <Paper className="d-flex" key={user.id} style={{margin:'10px 0px'}}>
-                <Avatar 
-                  src={user.avatar}
-                  size={80}
-                  style={{margin:'10px', width: '90px'}}
-                />
-                <div className="d-flex flex-column align-items-start justify-content-center" style={{width:'75%'}}>
-                  <span className="title">{user.name}</span>
-                  <span>{user.username}</span> 
-                  <span>{user.department}</span>
-                </div>
-              </Paper>)
-            ) :
-            (<Paper style={{margin: "10px 0px", height: "40px"}} className='text-center d-flex justify-content-center align-items-center'>
-              <i style={{opacity:0.36,fontSize:'18px',fontWeight:'bold'}}>
-                Không có thông tin
-              </i>
-            </Paper>)
+          {this.renderUsers(users, groupId)}
+          {this.props.nonUsers && 
+            (this.props.nonUsers.length != 0 &&
+              <RaisedButton style={{width: '100%'}} onClick={() => this.setState({addMemberDialogOpen: true })}>Add member</RaisedButton>)
           }
-          <RaisedButton style={{width: '100%'}} onClick={() => this.setState({addUserDialogOpen: true })}>Add member</RaisedButton>
         </div>
 
         <div className='col-md-8 order-md-1'>
@@ -262,26 +176,26 @@ class GroupDetails extends Component {
             <TextField
               underlineShow={false}
               fullWidth={true}
-              hintText={'Seach by name or email'}
+              hintText={'Tìm kiếm theo từ khoá'}
               id="newsSearch" type="search"
               onChange={this.handleNewsSearch}
               value={this.state.newsSearch} 
             />
           </Paper>
-          {
-            this.renderNews(news)
-          }
+          {this.renderNews(news)}
         </div>
       </div>
-      {/* <AddMemberDialog
-        open={this.state.addUserDialogOpen}
+      <AddMemberDialog
+        open={this.state.addMemberDialogOpen}
         data={this.props.nonUsers}
+        groupId={groupId}
+        addMember={this.props.addMember}
         handleClose={() => {
           this.setState({
-            addUserDialogOpen: false
+            addMemberDialogOpen: false
           })
         }}
-      /> */}
+      />
     </QueueAnim>
     }
     else {

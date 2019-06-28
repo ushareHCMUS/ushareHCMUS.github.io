@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { Redirect } from 'react-router-dom';
-import { removeMember, changeRemoveStatus, addNews } from '../actions/';
+import { removeMember, changeRemoveStatus, addNews, editNews } from '../actions/';
+import { formatUrlDateString, formatUrlTimeString } from '../../../../../utils/helper';
 import PageLoading from '../../../../../components/PageLoading/';
 import {
   Paper,
@@ -13,7 +14,11 @@ import {
   Checkbox
 } from 'material-ui';
 import QueueAnim from 'rc-queue-anim';
+import ImportantIcon from 'material-ui/svg-icons/toggle/star';
 import SearchIcon from 'material-ui/svg-icons/action/search';
+import EditIcon from 'material-ui/svg-icons/image/edit';
+import { SocialPeople, SocialPerson } from 'material-ui/svg-icons';
+import EditNewsDialog from './EditNewsDialog';
 
 class News extends Component {
   constructor(props) {
@@ -23,6 +28,7 @@ class News extends Component {
       removeBtn: true,
       isPublic: true,
       isPrivate: false,
+      isOpen: false,
       newsSearch: '',
       selectedGroup: [],
       newsTitle: '',
@@ -33,6 +39,7 @@ class News extends Component {
       newsContentErr: '',
       timeErr: '',
       locationErr: '',
+      newsObject: {}
     };
   }
 
@@ -47,21 +54,38 @@ class News extends Component {
       news = news.filter((item) => item.title.toLowerCase().includes(this.state.newsSearch))
     }
 
+    for(var i = 0;i < news.length; i++) {
+      for(var j = 0; j < this.props.groupNames.length; j++) {
+        if(news[i].groups == this.props.groupNames[j].groupId) {
+          news[i].groupName = this.props.groupNames[j].groupName;
+          break;
+        }
+      }
+    }
     return (
       news && (news.length != 0 ? news.map(single => (
-        // <Link to={`/news/${single.id}`} style={{ textDecoration: 'none' }} key={single.id}>
-          <Paper className="card"  key={single.id}>
-            <div className="card-body">
-              <h5>{single.title}</h5>
+        <Paper className="card" key={single.id}>
+          <div className="card-header d-flex flex-row justify-content-between">
+            <div className='d-flex flex-row align-items-center justify-content-center'>
+              {<IconButton
+                children={<SocialPerson />} 
+                tooltip={single.groupName}
+              />}
+              {single.isImportant ? <ImportantIcon/> : null}
             </div>
-            <div className="card-footer text-muted">
-              {/* {single.timeStamp.toDate().toString()}
-              {
-                single.isImportant ? <ImportantIcon/> : null
-              } */}
-            </div>
-          </Paper>
-        // </Link>
+          
+            <IconButton
+              onClick={(e) => this.setState({ isOpen: true, newsObject: single })}
+              children={<EditIcon/>}
+            />
+          </div>
+          <div className="card-body">
+            <h5>{single.title}</h5>
+          </div>
+          <div className="card-footer text-muted d-flex flex-row align-items-center justify-content-between">
+            <b>{'Đăng vào lúc : '}</b> {formatUrlTimeString(single.timeStamp.seconds * 1000) + " " + formatUrlDateString(single.timeStamp.seconds * 1000)}
+          </div>
+        </Paper>
       )) :
       (<Paper style={{marginTop: "10px", height: "40px"}} className='text-center d-flex justify-content-center align-items-center'>
         <i style={{opacity:0.36,fontSize:'18px',fontWeight:'bold'}}>
@@ -71,17 +95,8 @@ class News extends Component {
     );
   }
 
-  componentWillReceiveProps() {
-    this.setState({
-      newsTitleErr: '',
-      newsContentErr: '',
-      timeErr: '',
-      locationErr: '',
-    });
-  }
-
   render() {
-    const { news, auth, groupNames } = this.props;
+    const { news, auth, groupNames, groupsIds } = this.props;
     if(!auth.uid && !auth) return <Redirect to='/login'/>
     if (news) {
       return (
@@ -98,7 +113,7 @@ class News extends Component {
               <TextField
                 underlineShow={false}
                 fullWidth={true}
-                hintText={'Seach by name or email'}
+                hintText={'Tìm kiếm theo từ khoá'}
                 onChange={this.handleNewsSearch}
                 value={this.state.newsSearch} 
               />
@@ -109,7 +124,7 @@ class News extends Component {
           </div>
           <div className='col-md-5 d-flex flex-column' key="2" style={{padding:'10px', marginTop:'10px'}}>
             <Paper className='d-flex flex-row align-items-center' style={{height:'69px',borderBottom:'1px solid #E0E0E0'}}>
-              <h4 style={{marginLeft:'16px'}}>Tin mới</h4>
+              <h4 style={{marginLeft:'16px'}}>Tạo tin mới</h4>
             </Paper>
             <Paper style={{marginTop:'10px', padding:'10px'}}>
               <TextField
@@ -117,7 +132,7 @@ class News extends Component {
                 onChange={(e) => {
                   this.setState({ newsTitle: e.currentTarget.value });
                 }}
-                errorText={this.state.titleErr}
+                errorText={this.state.newsTitleErr}
                 fullWidth
               />
               <TextField
@@ -149,7 +164,7 @@ class News extends Component {
               />
               <div>
                 <h6>Loại tin</h6>
-                <div className={'d-flex flex-row'}>
+                <div className={'d-flex flex-row align-items-center'}>
                   <Checkbox 
                     checked={this.state.isPublic} 
                     style={{width:'24px'}}
@@ -164,7 +179,7 @@ class News extends Component {
                   }/>
                   <div>Công khai</div>
                 </div>
-                <div className={'d-flex flex-row'}>
+                <div className={'d-flex flex-row align-item-center'}>
                   <Checkbox 
                     checked={this.state.isPrivate} 
                     style={{width:'24px'}}
@@ -181,7 +196,7 @@ class News extends Component {
                 </div>
               </div>
               <div style={{marginLeft:'20px'}}>{!this.state.isPublic  && groupNames.map(id => 
-                <div className={'d-flex flex-row'}>
+                <div className={'d-flex flex-row align-items-center'}>
                   <Checkbox 
                     style={{width:'24px'}}
                     id={id.groupName}
@@ -189,16 +204,18 @@ class News extends Component {
                       var { selectedGroup } = this.state;
 
                       if(check) {
-                        if(!selectedGroup.includes(id.groupName)) {
+                        if(!selectedGroup.includes(id.groupId)) {
                           selectedGroup.push(id.groupId);
                         }
                       } else {
-                        var index = selectedGroup.indexOf(id.groupId);
+                        const index = selectedGroup.indexOf(id.groupId);
  
                         if (index > -1) {
                           selectedGroup.splice(index, 1);
                         }
                       }
+
+                      this.setState({ selectedGroup });
                     }
                   }/>
                   <div>{id.groupName}</div>
@@ -209,7 +226,8 @@ class News extends Component {
               style={{marginTop:'10px'}}
               label='Thêm tin mới'
               onClick={() => {
-                if (this.state.newsTitle !== '' && this.state.newsContent !== '' && this.state.time !== '' && this.state.location !== '') {
+                if (this.state.newsTitle != '' && this.state.newsContent != '' && this.state.time != '' && this.state.location != '') {
+                  const group = this.state.selectedGroup.length == 0 ? groupNames.map(group => group.groupId) : this.state.selectedGroup;
                   this.props.addNews({
                     title: this.state.newsTitle,
                     content: this.state.newsContent,
@@ -218,28 +236,52 @@ class News extends Component {
                     isPublic: this.state.isPublic,
                     groupsIds: this.state.selectedGroup,
                     isImportant: true
-                  }, this.state.selectedGroup.toString());
+                  }, group);
+                }
+
+                if (this.state.newsTitle == '') {
+                  this.setState({ newsTitleErr: 'Tên của tin không được rỗng' });
+                } else {
+                  this.setState({ newsTitleErr: '' });
                 }
             
-                // if (this.state.newsTitle == '') {
-                //   this.setState({ newsTitleErr: 'Tên của tin không được rỗng' });
-                // }
+                if (this.state.newsContent == '') {
+                  this.setState({ newsContentErr: 'Nội dung của tin không được rỗng' });
+                } else {
+                  this.setState({ newsContentErr: '' });
+                }
             
-                // if (this.state.newsContent) {
-                //   this.setState({ newsContentErr: 'Nội dung của tin không được rỗng' });
-                // }
+                if (this.state.time == '') {
+                  this.setState({ timeErr: 'Thời gian không được rỗng' });
+                } else {
+                  this.setState({ timeErr: '' });
+                }
             
-                // if (this.state.time) {
-                //   this.setState({ timeErr: 'Thời gian không được rỗng' });
-                // }
-            
-                // if (this.state.location) {
-                //   this.setState({ locationErr: 'Địa điểm không được rỗng' });
-                // }
-                // this.props.addNews()
+                if (this.state.location == '') {
+                  this.setState({ locationErr: 'Địa điểm không được rỗng' });
+                } else {
+                  this.setState({ locationErr: '' });
+                }
               }}
             />
           </div>
+          <EditNewsDialog
+            open={this.state.isOpen}
+            data={this.state.newsObject}
+            editNews={(data) => {
+              const changedData = {
+                ...this.state.newsObject,
+                content: data.content ,
+                title: data.title,
+                place: data.place,
+                time: data.time
+              }
+              this.props.editNews(changedData);
+            }}
+            handleClose={() => {
+              this.setState({ isOpen: false })
+            }}
+          />
         </QueueAnim>
       )
     }
@@ -255,11 +297,11 @@ const mapStateToProps = (state, ownProps) => {
   const news = state.firestore.ordered.news;
   const groupsIds = state.firestore.data.groups || [];
   const groupNames = Object.keys(groupsIds).map(id => groupsIds[id]);
-  const groupNews = news ? news.filter(groupNews => (groupNews.isPublic !== undefined && groupNews.isPublic === true)) : null;
   return {
-    news: groupNews,
+    news: news,
     auth: state.firebase.auth,
-    groupNames: groupNames
+    groupNames: groupNames,
+    groupsIds: groupsIds
   }
 }
 
@@ -267,10 +309,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     removeMember: (member, group) => dispatch(removeMember(member, group)),
     changeRemoveStatus: () => dispatch(changeRemoveStatus()),
-    addNews: (news, groups) => dispatch(addNews(news, groups))
+    addNews: (news, groups) => dispatch(addNews(news, groups)),
+    editNews: (news) => dispatch(editNews(news))
   }
 }
-
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),

@@ -91,7 +91,7 @@ class Login extends React.Component {
         backgroundSize:'cover',
         backgroundRepeat:'no-repeat', 
         backgroundPosition:'center top',
-        backgroundImage: `url('assets/images/login-background.jpg')`
+        backgroundImage: `url('https://www.hcmus.edu.vn/images/2018/11/21/bn2.png')`
       }}>
         <PageLoading open={this.props.requestStatus.sending} />
         <div className="main-body">

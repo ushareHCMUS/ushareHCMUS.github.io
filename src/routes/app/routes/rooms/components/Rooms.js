@@ -4,35 +4,10 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
 import PageLoading from '../../../../../components/PageLoading/';
 import QueueAnim from 'rc-queue-anim';
-import { Redirect } from 'react-router-dom';
-// import AddMemberDialog from './AddMemberDialog';
-import { Link } from 'react-router-dom';
 import { 
   Paper, 
-  IconButton,
-  DatePicker,
-  TimePicker,
-  TextField,
-  Card,
-
-  CardActions,
-  CardHeader,
-  CardText,
   FlatButton,
-RaisedButton,
-Popover,
-Menu,
-MenuItem
-  
 } from 'material-ui';
-import ImportantIcon from 'material-ui/svg-icons/toggle/star';
-import PersonAdd from 'material-ui/svg-icons/social/person-add';
-import ArrowDropDownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
-import SearchIcon from 'material-ui/svg-icons/action/search';
-import { blue600, red600 } from 'material-ui/styles/colors';
-import AddUserDialog from '../../../../../components/Dialogs/AddUserDialog';
-import PopupDialog from '../../../../../components/Dialogs/PopupDialog';
-import RoomItem from './RoomItem';
 import { addRoomBookingNoti, changeRoomBookingStatus } from '../actions/';
 import { formatUrlDateString } from '../../../../../utils/helper';
 import DeclineDialog from './DeclineDialog';
@@ -48,7 +23,7 @@ class Rooms extends Component {
       roomSearch: '',
       declineDialogOpen: false,
       declineReason: '',
-      declineData: {}
+      declineData: {},
     };
   }
 
@@ -151,12 +126,9 @@ class Rooms extends Component {
                 label="Từ chối"
                 onClick={(e) => {
                   let tmp1 = JSON.parse(JSON.stringify(tmp));
-                  // delete tmp1.content;
-                  // delete tmp1.timeRequest;
                   tmp1.success = true;
                   tmp1.status = -1;
                   tmp1.message = "Yêu cầu đặt phòng bị từ chối, Lý do: ";
-                  console.log(tmp1)
                   this.setState({ 
                     declineDialogOpen: true,
                     declineData: tmp1
@@ -169,66 +141,40 @@ class Rooms extends Component {
         </Paper>
       }
     });
+    
   }
 
   render() {
     let { blocks, bookingInfo, bookingNoti, bookingStatus } = this.props;
-    return (!bookingInfo) ? 
-      (<PageLoading open={true}/>)
-      :
-      (<QueueAnim type="bottom" className="container ui-animate">
-        {/* <Paper key="1" className='d-flex flex-row align-items-center' style={{ padding:'10px', marginBottom:'15px', borderBottom:'1px solid #E0E0E0'}}>
-          <RaisedButton
-            label="asd"
-            onClick={() => {
-              this.props.addRoomBookingNoti({
-                date: undefined,
-                idRoom: '123',
-                message: 'abc',
-                shift: 2,
-                success: true,
-                timeStamp: undefined,
-                user: '123'
-              });
+    if(bookingInfo != undefined) {
+      return (bookingInfo.length == 0 ? 
+        (<PageLoading open={true}/>)
+        :
+        (<QueueAnim type="bottom" className="container ui-animate">
+          <Paper>
+            <h4 style={{padding:'14px 20px'}}>Yêu cầu đặt phòng</h4>
+          </Paper>
+          <div key="1">
+            {this.renderBookingInfo(bookingInfo)}
+          </div>  
+          <DeclineDialog
+            open={this.state.declineDialogOpen}
+            decline={(reason) => {
+              let data = JSON.parse(JSON.stringify(this.state.declineData));
+              data.message += reason;
+              data.success = false;
+              this.props.addRoomBookingNoti(data);
             }}
-          />
-        </Paper> */}
-        <div className='col-md-7' key="1">
-          {/* <Paper className='d-flex flex-row align-items-center' style={{ padding:'10px', marginTop:'20px',borderBottom:'1px solid #E0E0E0'}}>
-            <IconButton
-              children={<SearchIcon/>}
-            />
-            <TextField
-              name={'decoy'}
-              style={{width:'0px',height:'0px'}}
-            />
-            <TextField
-              underlineShow={false}
-              fullWidth={true}
-              hintText={'Seach by name or email'}
-              onChange={this.handleNewsSearch}
-              value={this.state.newsSearch} 
-            />
-          </Paper> */}
-        </div>
-        <div key="2">
-          {/* {this.renderRooms(blocks)} */}
-          {this.renderBookingInfo(bookingInfo)}
-        </div>  
-        <DeclineDialog
-          open={this.state.declineDialogOpen}
-          decline={(reason) => {
-            let data = JSON.parse(JSON.stringify(this.state.declineData));
-            data.message += reason;
-            data.success = false;
-            this.props.addRoomBookingNoti(data);
-          }}
-          handleClose={(e) => {
-            this.setState({
-              declineDialogOpen: false
-            })
-          }}/>
-      </QueueAnim>)
+            handleClose={(e) => {
+              this.setState({
+                declineDialogOpen: false
+              })
+            }}/>
+        </QueueAnim>)
+      )
+    } else {
+      return <div/>
+    }
   }
 }
 

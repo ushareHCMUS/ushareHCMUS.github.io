@@ -2,32 +2,37 @@ export const addNews = (news, groups) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
 
-    firestore.collection('news').add({
-    }).then((docRef) => {
-      var batch = firestore.batch();
+    var batch = firestore.batch();
+    groups.map((group) => {
+      const id = createRandomString(20);
+      batch.update(firestore.collection('groups').doc(group), {
+        news: firestore.FieldValue.arrayUnion(id.toString())
+      })
 
-      // batch.update(firestore.collection('groups').doc(groups.value), {
-      //     news: firestore.FieldValue.arrayUnion(docRef.id.toString())
-      //   })
-
-      batch.set(firestore.collection('news').doc(docRef.id), {
+      batch.set(firestore.collection('news').doc(id), {
         title: news.title,
         content: news.content,
-        groups: 'cntt-k15-2',
+        groups: group,
         isImportant: news.isImportant,
         time: news.time,
         place: news.place,
         timeStamp: firestore.FieldValue.serverTimestamp(),
         isPublic: news.isPublic
       })
-      batch.commit().then(() => {
-        dispatch({ type: 'ADD_NEWS', news: news, groups: groups });
-      }).catch((err) => {
-        firestore.collection('news').doc(docRef.id).delete();
-        dispatch({ type: 'ADD_NEWS_ERROR', err });
-      })
+    });
+
+    batch.commit().then(() => {
+      dispatch({ type: 'ADD_NEWS', news: news, groups: groups });
+    }).catch((err) => {
+      dispatch({ type: 'ADD_NEWS_ERROR', err });
     })
   }
+}
+
+function createRandomString( length ) {
+  var str = "";
+  for ( ; str.length < length; str += Math.random().toString( 36 ).substr( 2 ) );
+  return str.substr( 0, length );
 }
 
 export const changeAddStatus = () => {
@@ -36,37 +41,22 @@ export const changeAddStatus = () => {
   }
 }
 
-export const editNews = (news, groups, allGroups) => {
+export const editNews = (news) => {
   return (dispatch, getState, { getFirebase, getFirestore }) => {
     const firestore = getFirestore();
     var batch = firestore.batch();
-    var nongroupsArr = allGroups.filter(
-      function (e) {
-        return this.indexOf(e) < 0;
-      }, groups.value
-    );
-    batch.update(firestore.collection('groups').doc(groups.value), {
-        news: firestore.FieldValue.arrayUnion(news.id)
-      })
-    nongroupsArr.map(group =>
-      batch.update(firestore.collection('groups').doc(group), {
-        news: firestore.FieldValue.arrayRemove(news.id)
-      })
-    );
-    batch.update(firestore.collection('news').doc(news.id), {
-      title: news.title,
-      content: news.content,
-      groups: 'cntt-k15-2',
-      isImportant: news.isImportant,
-      place: news.place,
-      time: news.time,
-      isPublic: news.isPublic.value
+
+    const id = news.id
+    delete news.id
+
+    batch.update(firestore.collection('news').doc(id), {
+      ...news,
+      timeStamp: new Date(news.timeStamp.seconds * 1000)
     });
-    batch.commit()
-    .then(() => {
-      dispatch({ type: 'EDIT_NEWS', news: news, groups: groups });
+    batch.commit().then(() => {
+      dispatch({ type: 'CHANGE_ROOM_BOOKING_STATUS' });
     }).catch((err) => {
-      dispatch({ type: 'EDIT_NEWS_ERROR', err });
+      dispatch({ type: 'CHANGE_ROOM_BOOKING_STATUS_ERROR', err });
     })
   }
 }

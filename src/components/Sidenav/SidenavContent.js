@@ -89,9 +89,10 @@ class SidebarContent extends React.Component {
   render() {
     return (
       <ul className="nav" ref={(c) => { this.nav = c; }}>
-        <li><FlatButton href="#/app/groups"><i className="nav-icon material-icons">people</i><span className="nav-text">Nhóm</span></FlatButton></li>
+        <li><FlatButton href="#/app/groups"><i className="nav-icon material-icons">people</i><span className="nav-text">Nhóm sinh viên</span></FlatButton></li>
         <li><FlatButton href="#/app/news"><i className="nav-icon material-icons">notifications</i><span className="nav-text">Bảng tin</span></FlatButton></li>
         <li><FlatButton href="#/app/rooms"><i className="nav-icon material-icons">dashboard</i><span className="nav-text">Đặt phòng</span></FlatButton></li>
+        <li><FlatButton href="#/app/users"><i className="nav-icon material-icons">person</i><span className="nav-text">Quản lý sinh viên</span></FlatButton></li>
       </ul>
     );
   }

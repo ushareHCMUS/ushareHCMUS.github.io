@@ -24,7 +24,8 @@ import {
   Menu,
   MenuItem
 } from 'material-ui';
-import PersonAdd from 'material-ui/svg-icons/social/person-add';
+import PersonAddIcon from 'material-ui/svg-icons/social/person-add';
+import RemoveIcon from 'material-ui/svg-icons/content/remove-circle';
 import ArrowDropDownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import { addGroup } from '../actions/';
@@ -47,6 +48,7 @@ class GroupList extends Component {
       search: '',
       menuOpen: false,
       addGroupDialogOpen: false,
+      deleteGroupDialogOpen: false,
     }
   }
 
@@ -71,13 +73,12 @@ class GroupList extends Component {
   }
 
   menuItemClickHandler = (e, menuItem) => {
-    this.setState({ 
-      menuOpen: false,
-      addGroupDialogOpen: true,
-    });
+   
   }
 
-  renderCol(content) {
+  renderCol(srcContent) {
+    const content = srcContent.length >= 23 ? srcContent.substring(0, 20) + "..." : srcContent;
+
     return <TableRowColumn 
       width={'20%'} 
       className={'text-center'} 
@@ -130,16 +131,16 @@ class GroupList extends Component {
             <TextField
               underlineShow={false}
               fullWidth={true}
-              hintText={'Seach by name or email'}
+              hintText={'Tìm kiếm theo tên nhóm hoặc mô tả'}
               id="search" type="search"
               onChange={this.handleSearch}
             />
             <div className='d-flex flex-row justify-content-center' style={{margin:'0px 0px 5px 10px'}}>
               <div>
                 <RaisedButton
-                  label='Actions'
+                  label='Thao tác'
                   labelPosition={'after'}
-                  style={{width:'120px'}}
+                  style={{width:'140px'}}
                   onClick={this.menuOpenHandler}
                   icon={<ArrowDropDownIcon style={{marginBottom:'3px'}}/>}>
                     <Popover
@@ -148,11 +149,26 @@ class GroupList extends Component {
                       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                       targetOrigin={{ horizontal: 'right', vertical: 'top' }}
                       onRequestClose={this.menuCloseHandler}>
-                      <Menu
-                        onItemClick={this.menuItemClickHandler}>
+                      <Menu>
                         <MenuItem
                           primaryText="Thêm nhóm"
-                          leftIcon={<PersonAdd/>}
+                          onClick={() => {
+                            this.setState({ 
+                              menuOpen: false,
+                              addGroupDialogOpen: true,
+                            });
+                          }}
+                          leftIcon={<PersonAddIcon/>}
+                        />
+                        <MenuItem
+                          primaryText="Xoá nhóm"
+                          onClick={() => {
+                            this.setState({
+                              menuOpen: false,
+                              deleteGroupDialogOpen: true,
+                            })
+                          }}
+                          leftIcon={<RemoveIcon/>}
                         />
                       </Menu>
                     </Popover>
@@ -241,7 +257,7 @@ const mapStateToProps = (state) => {
   const groups = state.firestore.ordered.groups;
   const groupsList = groups ? groups.filter(group => (group.id !== 'hcmus')) : null;
   const users = state.firestore.ordered.users;
-  // const filteredUsers = users ?  : []
+  
   return {
     groups: groupsList,
     auth: state.firebase.auth,

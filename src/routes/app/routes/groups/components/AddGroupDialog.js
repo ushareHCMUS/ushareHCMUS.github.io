@@ -3,11 +3,8 @@ import {
   Dialog,
   TextField,
   FlatButton,
-  AutoComplete,
-  Checkbox,
 } from 'material-ui';
 import { red600 } from 'material-ui/styles/colors';
-import { firestoreConnect } from 'react-redux-firebase';
 
 class AddGroupDialog extends Component {
   constructor(props) {
@@ -89,13 +86,18 @@ class AddGroupDialog extends Component {
     switch(fieldKey) {
       case 'Tên nhóm':
         this.setState({ name: e.currentTarget.value });
+        break;
       case 'Mô tả nhóm':
         this.setState({ description: e.currentTarget.value });
+        break;
       case 'Id nhóm':
         this.setState({ id: e.currentTarget.value });
+        break;
       case 'Hình đại diện của nhóm':
         this.setState({ image: e.currentTarget.value });
+        break;
       default:
+        break;
     }
   }
 
