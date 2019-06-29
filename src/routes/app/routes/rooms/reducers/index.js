@@ -1,6 +1,6 @@
 const initState = {
-  addStatus: null,
-  removeStatus: null
+  acceptStatus: null,
+  rejectStatus: null
 }
 
 const roomReducer = (state = initState, action) => {

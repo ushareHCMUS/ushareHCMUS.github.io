@@ -30,7 +30,6 @@ import ArrowDropDownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down'
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import { addGroup } from '../actions/';
 
-
 const headerTextStyle = {
   fontSize:'18px',
   fontWeight: '500'
@@ -70,10 +69,6 @@ class GroupList extends Component {
 
   menuCloseHandler = (e) => {
     this.setState({ menuOpen: false });
-  }
-
-  menuItemClickHandler = (e, menuItem) => {
-   
   }
 
   renderCol(srcContent) {

@@ -7,6 +7,7 @@ import {
   Avatar
 } from 'material-ui';
 import { red600 } from 'material-ui/styles/colors';
+import { hashCode, intToRGB } from '../../../../../utils/helper';
 
 class AddMemberDialog extends Component {
   constructor(props) {
@@ -33,7 +34,6 @@ class AddMemberDialog extends Component {
 
   render() {
     const { data } = this.props;
-    console.log(this.props)
 
     return (
       <Dialog
@@ -82,11 +82,21 @@ class AddMemberDialog extends Component {
               }}
             />
             <div className="d-flex justify-content-center align-items-center">
-              <Avatar 
+              {user.avatar ? <Avatar 
                 src={user.avatar}
                 size={80}
-                style={{margin:'10px'}}
-              />
+                style={{
+                  margin:'10px 20px'
+                }}/>
+              :
+              <Avatar 
+                size={80}
+                style={{
+                  margin:'10px 20px',
+                  background:intToRGB(hashCode(user.name[0]))
+                }}>
+                  {user.name[0]}
+              </Avatar>}
               <div className="d-flex flex-column align-items-start justify-content-center" style={{width:'75%'}}>
                 <span className="title">{user.name}</span>
                 <span>{user.username}</span> 

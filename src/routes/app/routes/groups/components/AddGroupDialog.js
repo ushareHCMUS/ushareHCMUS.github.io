@@ -57,25 +57,25 @@ class AddGroupDialog extends Component {
       this.props.addGroup(data);
     }
 
-    if(this.state.description == '') {
+    if(this.state.description.trim() == '') {
       this.setState({ 
         descriptionErr: 'Mô tả nhóm không được rỗng'
       });
     }
 
-    if(this.state.id == '') {
+    if(this.state.id.trim() == '') {
       this.setState({ 
         idErr: 'Id nhóm không được rỗng'
       });
     }
 
-    if(this.state.image == '') {
+    if(this.state.image.trim() == '') {
       this.setState({ 
         imageErr: 'Hình đại diện của nhóm không được rỗng'
       });
     }
 
-    if(this.state.name == '') {
+    if(this.state.name.trim() == '') {
       this.setState({ 
         nameErr: 'Tên nhóm không được rỗng'
       });

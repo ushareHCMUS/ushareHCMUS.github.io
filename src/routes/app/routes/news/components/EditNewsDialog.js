@@ -51,25 +51,25 @@ class EditNewsDialog extends Component {
       })
     }
 
-    if(this.state.title == '') {
+    if(this.state.title.trim() == '') {
       this.setState({ 
         titleErr: 'Tiêu đề tin không được rỗng'
       });
     }
 
-    if(this.state.time == '') {
+    if(this.state.time.trim() == '') {
       this.setState({ 
         timeErr: 'Thời gian diễn ra không được rỗng'
       });
     }
 
-    if(this.state.content == '') {
+    if(this.state.content.trim() == '') {
       this.setState({ 
         contentErr: 'Nội dung tin không được rỗng'
       });
     }
 
-    if(this.state.place == '') {
+    if(this.state.place.trim() == '') {
       this.setState({ 
         placeErr: 'Địa điểm không được rỗng'
       });

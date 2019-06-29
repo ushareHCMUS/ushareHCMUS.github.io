@@ -18,7 +18,7 @@ import {
 import QueueAnim from 'rc-queue-anim';
 import SearchIcon from 'material-ui/svg-icons/action/search';
 import ImportantIcon from 'material-ui/svg-icons/toggle/star';
-import { formatUrlDateString, formatUrlTimeString } from '../../../../../utils/helper';
+import { formatUrlDateString, formatUrlTimeString, hashCode, intToRGB } from '../../../../../utils/helper';
 
 class GroupDetails extends Component {
 
@@ -96,11 +96,21 @@ class GroupDetails extends Component {
     return users && users.length != 0 ? users.map(user => (
         <Paper className="d-flex align-items-center justify-content-between" key={user.id} style={{margin:'10px 0px'}}>
           <div className="d-flex flex-row align-items-center justify-content-center">
-            <Avatar 
+            {user.avatar ? <Avatar 
               src={user.avatar}
               size={80}
-              style={{margin:'10px'}}
-            />
+              style={{
+                margin:'10px 20px'
+              }}/>
+            :
+            <Avatar 
+              size={80}
+              style={{
+                margin:'10px 20px',
+                background:intToRGB(hashCode(user.name))
+              }}>
+                A
+            </Avatar>}
             <div className="d-flex flex-column align-items-start justify-content-center" style={{width:'75%'}}>
               <span className="title">{user.name}</span>
               <span>{user.username}</span> 

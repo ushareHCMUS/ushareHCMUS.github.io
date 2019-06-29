@@ -8,6 +8,7 @@ import { firebaseReducer } from 'react-redux-firebase';
 import group from '../routes/app/routes/groups/reducers/';
 import news from '../routes/app/routes/news/reducers/';
 import room from '../routes/app/routes/rooms/reducers/';
+import users from '../routes/app/routes/users/reducers/';
 
 const reducers = {
   routing: routerReducer,
@@ -17,6 +18,7 @@ const reducers = {
   group,
   news,
   room,
+  users,
   firestore: firestoreReducer,
   firebase: firebaseReducer
 };
