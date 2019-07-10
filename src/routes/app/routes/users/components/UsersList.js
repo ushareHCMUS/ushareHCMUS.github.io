@@ -29,7 +29,7 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import MessageIcon from 'material-ui/svg-icons/communication/message';
 
 import { hashCode, intToRGB } from '../../../../../utils/helper';
-import { removeUser, editUserInfo, addUser } from '../actions/';
+import { removeUser, editUserInfo, addUser, addMessage, getMessages } from '../actions/';
 import DeleteUserDialog from './DeleteUserDialog';
 import AddUserDialog from './AddUserDialog';
 import EditUserInfoDialog from './EditUserInfoDialog';
@@ -53,7 +53,8 @@ class UsersList extends Component {
       editUserDialogOpen: false,
       deleteUserDialogOpen: false,
       messageDialogOpen: false,
-      currentUser: {}
+      currentUser: {},
+      messageData: []
     }
   }
 
@@ -94,6 +95,46 @@ class UsersList extends Component {
 
   menuCloseHandler = (e) => {
     this.setState({ menuOpen: false });
+  }
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.usersId == undefined && this.props.usersId != undefined) {
+      const { firestore, usersId } = this.props
+      usersId.map(id => {
+        const docId = 'ad:' + id;
+        firestore.setListener({ 
+          collection: 'w2m-messages',
+          doc: docId,
+          subcollections: [{ collection: docId }], 
+        })
+      });
+    }
+  }
+
+  componentDidMount() {
+    const { firestore, usersId } = this.props
+    if(usersId && firestore) {
+      usersId.map(id => {
+        const docId = 'ad:' + id;
+        firestore.setListener({ 
+          collection: 'w2m-messages',
+          doc: docId,
+          subcollections: [{ collection: docId }], 
+        })
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    const { firestore, usersId } = this.props
+      usersId.map(id => {
+        const docId = 'ad:' + id;
+        firestore.unsetListener({ 
+          collection: 'w2m-messages',
+          doc: docId,
+          subcollections: [{ collection: docId }], 
+        })
+      });
   }
 
   renderAvatar(url, name) {
@@ -148,8 +189,8 @@ class UsersList extends Component {
             children={<MessageIcon color="#00BCD4"/>}
             onClick={() => {
               this.setState({ 
-                messa: true,
-                currentUser: data
+                messageDialogOpen: true,
+                currentUser: data,
               });
             }}
             tooltip={"Liên hệ sinh viên"}
@@ -321,6 +362,11 @@ class UsersList extends Component {
         />
         <MessageUserDialog
           open={this.state.messageDialogOpen}
+          userData={this.state.currentUser}
+          messageData={this.state.currentUser.id ? (this.props.messages['ad:' + this.state.currentUser.id] ? this.props.messages['ad:' + this.state.currentUser.id]['ad:' + this.state.currentUser.id] : []) : []}
+          addMessage={(mess) => {
+            this.props.addMessage(this.state.currentUser.id, mess);
+          }}
           handleClose={() => this.setState({ messageDialogOpen: false })}
         />
       </QueueAnim>
@@ -332,11 +378,14 @@ class UsersList extends Component {
 
 const mapStateToProps = (state) => {
   const users = state.firestore.ordered.users;
-  const usersId = users && users.map(user => user.id)
+  const usersId = users && users.map(user => user.id);
+  const messages = state.firestore.data['w2m-messages'];
+
   return {
     auth: state.firebase.auth,
     users,
-    usersId
+    usersId,
+    messages
   }
 }
 
@@ -344,13 +393,15 @@ const mapDispatchToProps = (dispatch) => {
   return {
     removeUser: (userId) => dispatch(removeUser(userId)),
     editUserInfo: (userId ,userInfo) => dispatch(editUserInfo(userId, userInfo)),
-    addUser: (userInfo) => dispatch(addUser(userInfo))
+    addUser: (userInfo) => dispatch(addUser(userInfo)),
+    addMessage: (userId, mess) => dispatch(addMessage(userId, mess)),
+    getMessages: (userId) => dispatch(getMessages(userId))
   }
 }
 
 export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   firestoreConnect([
-    { collection: 'users' }
+    { collection: 'users' },
   ])
 )(UsersList)

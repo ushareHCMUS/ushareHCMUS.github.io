@@ -2,7 +2,7 @@ const date = new Date();
 const year = date.getFullYear();
 
 const APPCONFIG = {
-  brand: 'UShare',
+  brand: 'UShare Admin',
   user: 'Lisa',
   year,
   AutoCloseMobileNav: true,                         // true, false. Automatically close sidenav on route change (Mobile only)

@@ -6,6 +6,7 @@ import PageLoading from '../../../../../components/PageLoading/';
 import QueueAnim from 'rc-queue-anim';
 import { Redirect } from 'react-router-dom';
 import AddGroupDialog from './AddGroupDialog';
+import DeleteGroupDialog from './DeleteGroupDialog';
 import { Link } from 'react-router-dom';
 import { formatUrlDateString } from '../../../../../utils/helper';
 import {
@@ -234,6 +235,15 @@ class GroupList extends Component {
             handleClose={() => {
               this.setState({
                 addGroupDialogOpen: false
+              })
+            }}
+          />
+          <DeleteGroupDialog
+            open={this.state.deleteGroupDialogOpen}
+            deleteGroup={() => {}}
+            handleClose={() => {
+              this.setState({
+                deleteGroupDialogOpen: false
               })
             }}
           />

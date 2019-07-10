@@ -90,7 +90,7 @@ class Rooms extends Component {
       case 6: 
         return '16:30 - 18:00';
     }
-}
+  }
 
   renderBookingInfo(bookingInfo) {
     return Object.keys(bookingInfo).map(info => {
@@ -129,6 +129,7 @@ class Rooms extends Component {
                   tmp1.success = true;
                   tmp1.status = -1;
                   tmp1.message = "Yêu cầu đặt phòng bị từ chối, Lý do: ";
+                  tmp1.info = info;
                   this.setState({ 
                     declineDialogOpen: true,
                     declineData: tmp1
@@ -163,7 +164,12 @@ class Rooms extends Component {
               let data = JSON.parse(JSON.stringify(this.state.declineData));
               data.message += reason;
               data.success = false;
+
+              const id = data.info;
+              delete data.info
+
               this.props.addRoomBookingNoti(data);
+              this.props.changeRoomBookingStatus(id, data);
             }}
             handleClose={(e) => {
               this.setState({

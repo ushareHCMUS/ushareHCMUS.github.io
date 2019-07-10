@@ -27,8 +27,6 @@ export const removeUser = (userId) => {
     const firestore = getFirestore();
     var batch = firestore.batch();
 
-    console.log(userId)
-
     batch.delete(firestore.collection('users').doc(userId));
 
     batch.commit().then(() => {
@@ -50,6 +48,41 @@ export const editUserInfo = (userId, newUserInfo) => {
       dispatch({ type: 'EDIT_USER_INFO' });
     }).catch((err) => {
       dispatch({ type: 'EDIT_USER_INFO_ERROR', err });
+    })
+  }
+}
+
+export const addMessage = (userId, messData) => {
+  return (dispatch, getState, { getFirebase, getFirestore }) => {
+    const firestore = getFirestore();
+    var batch = firestore.batch();
+    const time = Date.now();
+
+    const dest = 'ad:' + userId;
+    batch.set(firestore.collection('w2m-messages').doc(dest).collection(dest).doc(time.toString()), {
+      ...messData,
+      time
+    });
+
+    batch.commit().then(() => {
+      dispatch({ type: 'ADD_MESS_' + dest });
+    }).catch((err) => {
+      dispatch({ type: 'ADD_MESS_' + dest +'ERROR', err });
+    })
+  }
+}
+
+export const getMessages = (userId) => {
+  return (dispatch, getState, { getFirebase, getFirestore }) => {
+    const firestore = getFirestore();
+    const dest = 'ad:' + userId;
+
+    firestore.collection('w2m-messages').doc(dest).collection(dest).get().then((usersSnapshot) => {
+      var messages = []
+      usersSnapshot.forEach((doc) => messages.push(doc.data()));
+      dispatch({ type: 'GET_MESS_' + dest, messages });
+    }).catch((err) => {
+      dispatch({ type: 'GET_MESS_' + dest +'ERROR', err });
     })
   }
 }
